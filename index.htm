@@ -1,0 +1,3336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="page-title">Daffodil Beauty Salon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<style>
+/* ================================================================
+   DAFFODIL BEAUTY SALON — PREMIUM WEBSITE
+   Single-file HTML + CSS + JS | LocalStorage Backend
+================================================================ */
+
+:root {
+  --maroon:        #7B1E3A;
+  --maroon-dark:   #551228;
+  --maroon-light:  #9B2E4A;
+  --rose-gold:     #C4869A;
+  --rose-light:    #E8C5CE;
+  --gold:          #D4A853;
+  --beige:         #FAF0E6;
+  --beige-mid:     #F2E4D5;
+  --beige-dark:    #E8D5C0;
+  --white:         #FFFFFF;
+  --dark:          #2C1810;
+  --gray:          #6B5B5B;
+  --gray-light:    #9E8E8E;
+  --shadow-sm:     0 4px 15px rgba(123,30,58,0.08);
+  --shadow-md:     0 10px 40px rgba(123,30,58,0.12);
+  --shadow-lg:     0 20px 60px rgba(123,30,58,0.20);
+  --radius:        16px;
+  --radius-sm:     10px;
+  --transition:    all 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:'Raleway',sans-serif;background:var(--beige);color:var(--dark);overflow-x:hidden;line-height:1.6}
+h1,h2,h3,h4,h5,h6{font-family:'Cormorant Garamond',serif;line-height:1.2}
+a{text-decoration:none;color:inherit}
+img{max-width:100%;display:block}
+button{cursor:pointer;font-family:'Raleway',sans-serif}
+input,select,textarea{font-family:'Raleway',sans-serif}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:#f0e8e0}
+::-webkit-scrollbar-thumb{background:var(--rose-gold);border-radius:3px}
+
+/* ── LOADING SCREEN ── */
+#loading-screen{
+  position:fixed;inset:0;background:var(--maroon);
+  display:flex;align-items:center;justify-content:center;
+  z-index:9999;transition:opacity .6s ease,visibility .6s ease;
+}
+#loading-screen.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.load-inner{text-align:center;color:#fff}
+.load-flower{font-size:4.5rem;animation:bloom 1.8s ease-in-out infinite;display:block;margin-bottom:1rem}
+.load-name{font-size:2.5rem;letter-spacing:4px;font-weight:600;margin-bottom:.3rem}
+.load-sub{font-size:.8rem;letter-spacing:3px;text-transform:uppercase;opacity:.7}
+.load-bar{width:160px;height:3px;background:rgba(255,255,255,.2);border-radius:2px;margin:1.5rem auto 0;overflow:hidden}
+.load-bar-fill{height:100%;background:var(--rose-light);border-radius:2px;animation:loadProgress 2s ease forwards}
+@keyframes bloom{0%,100%{transform:scale(1) rotate(0deg)}50%{transform:scale(1.15) rotate(8deg)}}
+@keyframes loadProgress{from{width:0}to{width:100%}}
+
+/* ── NAVIGATION ── */
+#navbar{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  padding:1.2rem 2.5rem;
+  display:flex;align-items:center;justify-content:space-between;
+  transition:var(--transition);
+}
+#navbar.scrolled{
+  background:rgba(255,255,255,.97);
+  backdrop-filter:blur(12px);
+  box-shadow:0 2px 25px rgba(123,30,58,.1);
+  padding:.8rem 2.5rem;
+}
+.nav-logo{display:flex;align-items:center;gap:.6rem;cursor:pointer}
+.nav-logo-icon{font-size:2.2rem;color:var(--rose-gold);transition:var(--transition)}
+.nav-logo-text{font-size:2rem;font-weight:600;color:#fff;transition:var(--transition);letter-spacing:1px}
+#navbar.scrolled .nav-logo-text{color:var(--maroon)}
+.nav-logo:hover .nav-logo-icon{transform:scale(1.1) rotate(10deg)}
+.nav-links{display:flex;list-style:none;align-items:center;gap:2rem}
+.nav-links a{color:rgba(255,255,255,.9);font-weight:500;font-size:.92rem;letter-spacing:.5px;transition:var(--transition);position:relative}
+#navbar.scrolled .nav-links a{color:var(--dark)}
+.nav-links a::after{content:'';position:absolute;bottom:-3px;left:0;width:0;height:2px;background:var(--rose-gold);transition:var(--transition)}
+.nav-links a:hover{color:var(--rose-gold) !important}
+.nav-links a:hover::after{width:100%}
+.nav-book-btn{
+  background:linear-gradient(135deg,var(--rose-gold),var(--maroon));
+  color:#fff !important;padding:.6rem 1.6rem;border-radius:30px;
+  font-weight:600 !important;box-shadow:0 4px 15px rgba(196,134,154,.4);
+  transition:var(--transition) !important;
+}
+.nav-book-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(196,134,154,.5) !important}
+.nav-book-btn::after{display:none !important}
+.nav-admin-btn{
+  background:transparent;border:1px solid rgba(255,255,255,.5);
+  color:rgba(255,255,255,.9);padding:.4rem 1rem;border-radius:20px;
+  font-size:.78rem;letter-spacing:.5px;transition:var(--transition);
+  font-family:'Raleway',sans-serif;
+}
+#navbar.scrolled .nav-admin-btn{border-color:var(--maroon);color:var(--maroon)}
+.nav-admin-btn:hover{background:var(--maroon);color:#fff !important;border-color:var(--maroon)}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;z-index:1001;padding:4px}
+.hamburger span{width:24px;height:2px;background:#fff;transition:var(--transition);display:block}
+#navbar.scrolled .hamburger span{background:var(--maroon)}
+.hamburger.open span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
+.hamburger.open span:nth-child(2){opacity:0;transform:translateX(-10px)}
+.hamburger.open span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
+
+/* ── HERO ── */
+#hero{
+  min-height:100vh;position:relative;
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+}
+.hero-bg{
+  position:absolute;inset:0;z-index:0;
+  background:linear-gradient(150deg,#2a0a18 0%,#7B1E3A 50%,#A8546A 100%);
+}
+.hero-bg::before{
+  content:'';position:absolute;inset:0;
+  background:url('https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1920&q=80') center/cover no-repeat;
+  opacity:.22;
+}
+.hero-particles{position:absolute;inset:0;z-index:1;pointer-events:none}
+.particle{
+  position:absolute;border-radius:50%;
+  animation:floatUp linear infinite;opacity:0;
+}
+@keyframes floatUp{
+  0%{transform:translateY(100vh) scale(0);opacity:0}
+  10%{opacity:.7}90%{opacity:.5}
+  100%{transform:translateY(-120px) scale(1.2);opacity:0}
+}
+.hero-content{
+  position:relative;z-index:2;text-align:center;color:#fff;
+  padding:2rem 1.5rem;max-width:800px;
+}
+.hero-eyebrow{
+  display:inline-block;background:rgba(196,134,154,.25);
+  border:1px solid var(--rose-gold);color:var(--rose-light);
+  padding:.4rem 1.6rem;border-radius:30px;
+  font-size:.8rem;letter-spacing:3px;text-transform:uppercase;
+  margin-bottom:1.5rem;animation:fadeDown .8s ease both;
+}
+.hero-title{
+  font-size:clamp(3rem,9vw,6.5rem);font-weight:600;line-height:1.05;
+  margin-bottom:1rem;animation:fadeUp .9s ease .15s both;
+}
+.hero-title span{color:var(--rose-light);font-style:italic}
+.hero-tagline{
+  font-size:clamp(.95rem,2vw,1.25rem);color:rgba(255,255,255,.82);
+  font-weight:300;letter-spacing:4px;text-transform:uppercase;
+  margin-bottom:2.5rem;animation:fadeUp .9s ease .3s both;
+}
+.hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;animation:fadeUp .9s ease .45s both}
+.btn-primary{
+  background:linear-gradient(135deg,var(--rose-gold),var(--maroon));
+  color:#fff;padding:1rem 2.8rem;border:none;border-radius:50px;
+  font-size:1rem;font-weight:600;letter-spacing:.5px;
+  box-shadow:0 8px 30px rgba(196,134,154,.45);transition:var(--transition);
+}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 15px 40px rgba(196,134,154,.55)}
+.btn-outline{
+  background:transparent;color:#fff;padding:1rem 2.8rem;
+  border:2px solid rgba(255,255,255,.65);border-radius:50px;
+  font-size:1rem;font-weight:500;letter-spacing:.5px;transition:var(--transition);
+}
+.btn-outline:hover{background:rgba(255,255,255,.1);border-color:#fff;transform:translateY(-3px)}
+.hero-stats{
+  position:absolute;bottom:2.5rem;left:0;right:0;z-index:2;
+  display:flex;justify-content:center;gap:3.5rem;flex-wrap:wrap;
+  animation:fadeUp .9s ease .6s both;
+}
+.hero-stat-num{font-size:2.2rem;font-weight:700;color:var(--rose-light)}
+.hero-stat-lbl{font-size:.7rem;letter-spacing:2px;text-transform:uppercase;opacity:.75;margin-top:.1rem}
+
+@keyframes fadeDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* ── SECTION BASE ── */
+.section{padding:5rem 2rem}
+.container{max-width:1220px;margin:0 auto}
+.sec-header{text-align:center;margin-bottom:3rem}
+.sec-eyebrow{
+  display:inline-block;color:var(--rose-gold);
+  font-size:.78rem;letter-spacing:3px;text-transform:uppercase;
+  font-weight:700;margin-bottom:.5rem;
+}
+.sec-title{font-size:clamp(1.9rem,4vw,3rem);color:var(--maroon);margin-bottom:.8rem;font-weight:600}
+.sec-divider{
+  width:55px;height:3px;
+  background:linear-gradient(90deg,var(--rose-gold),var(--maroon));
+  margin:.8rem auto 1.2rem;border-radius:2px;
+}
+.sec-sub{font-size:1rem;color:var(--gray);max-width:580px;margin:0 auto;line-height:1.8}
+
+/* ── BANNER SLIDER ── */
+#banners{background:var(--maroon);padding:0;overflow:hidden}
+.banner-wrap{position:relative;height:380px;overflow:hidden}
+.banner-slide{
+  position:absolute;inset:0;display:flex;
+  align-items:center;justify-content:center;
+  opacity:0;transition:opacity .9s ease;padding:2rem;
+}
+.banner-slide.active{opacity:1}
+.banner-bg{
+  position:absolute;inset:0;background-size:cover;background-position:center;
+  opacity:.18;
+}
+.banner-body{position:relative;z-index:2;text-align:center;color:#fff;max-width:700px}
+.banner-tag{
+  display:inline-block;background:rgba(196,134,154,.25);
+  border:1px solid var(--rose-gold);color:var(--rose-light);
+  padding:.3rem 1rem;border-radius:20px;font-size:.75rem;
+  letter-spacing:2px;text-transform:uppercase;margin-bottom:.8rem;
+}
+.banner-title{font-size:clamp(1.8rem,4vw,3.2rem);font-weight:600;margin-bottom:.5rem}
+.banner-sub{font-size:1.05rem;opacity:.85;margin-bottom:1.5rem}
+.banner-btn{
+  background:var(--rose-gold);color:#fff;padding:.75rem 2rem;
+  border:none;border-radius:30px;font-size:.9rem;font-weight:600;
+  transition:var(--transition);letter-spacing:.5px;
+}
+.banner-btn:hover{background:#fff;color:var(--maroon);transform:translateY(-2px)}
+.b-nav{
+  position:absolute;top:50%;transform:translateY(-50%);
+  background:rgba(255,255,255,.15);border:none;color:#fff;
+  width:44px;height:44px;border-radius:50%;font-size:1.1rem;
+  transition:var(--transition);z-index:3;
+}
+.b-nav:hover{background:rgba(255,255,255,.28)}
+.b-prev{left:1.2rem}.b-next{right:1.2rem}
+.b-dots{
+  position:absolute;bottom:1.2rem;left:50%;
+  transform:translateX(-50%);display:flex;gap:.5rem;z-index:3;
+}
+.b-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:rgba(255,255,255,.35);cursor:pointer;transition:var(--transition);
+}
+.b-dot.active{background:var(--rose-gold);width:22px;border-radius:4px}
+
+/* ── SERVICES ── */
+#services{background:#fff}
+.services-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(265px,1fr));
+  gap:1.4rem;
+}
+.svc-card{
+  background:#fff;border:1.5px solid var(--beige-dark);
+  border-radius:var(--radius);padding:1.7rem;
+  transition:var(--transition);position:relative;overflow:hidden;cursor:pointer;
+}
+.svc-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:4px;
+  background:linear-gradient(90deg,var(--rose-gold),var(--maroon));
+  transform:scaleX(0);transform-origin:left;transition:var(--transition);
+}
+.svc-card:hover{transform:translateY(-7px);box-shadow:var(--shadow-lg);border-color:var(--rose-light)}
+.svc-card:hover::before,.svc-card.selected::before{transform:scaleX(1)}
+.svc-card.selected{
+  border-color:var(--maroon);
+  background:linear-gradient(140deg,#fff 0%,#fff5f8 100%);
+  box-shadow:var(--shadow-md);
+}
+.svc-icon{
+  width:52px;height:52px;border-radius:12px;
+  background:linear-gradient(135deg,var(--rose-light),var(--beige));
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;margin-bottom:.9rem;transition:var(--transition);
+}
+.svc-card:hover .svc-icon,.svc-card.selected .svc-icon{
+  background:linear-gradient(135deg,var(--rose-gold),var(--maroon));
+  color:#fff;transform:scale(1.05);
+}
+.svc-name{font-size:1.15rem;font-weight:600;color:var(--maroon);margin-bottom:.4rem}
+.svc-desc{font-size:.87rem;color:var(--gray);line-height:1.65;margin-bottom:.9rem}
+.svc-meta{display:flex;justify-content:space-between;align-items:center}
+.svc-price{font-size:1.3rem;font-weight:700;color:var(--maroon);font-family:'Cormorant Garamond',serif}
+.svc-dur{font-size:.78rem;color:var(--gray);background:var(--beige);padding:.28rem .75rem;border-radius:20px}
+.svc-check{
+  position:absolute;top:.9rem;right:.9rem;
+  width:24px;height:24px;border-radius:50%;
+  border:2px solid var(--rose-gold);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.75rem;transition:var(--transition);
+}
+.svc-card.selected .svc-check{background:var(--maroon);border-color:var(--maroon);color:#fff}
+.selected-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:linear-gradient(135deg,var(--maroon-dark),var(--maroon));
+  color:#fff;padding:1rem 2rem;z-index:200;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.8rem;
+  transform:translateY(100%);transition:var(--transition);
+  box-shadow:0 -8px 30px rgba(123,30,58,.35);
+}
+.selected-bar.visible{transform:translateY(0)}
+.sel-bar-left{display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap}
+.sel-bar-count{
+  background:rgba(255,255,255,.15);padding:.3rem .9rem;
+  border-radius:20px;font-size:.85rem;font-weight:600;
+}
+.sel-bar-total{font-size:1.2rem;font-weight:700;font-family:'Cormorant Garamond',serif}
+.sel-bar-btn{
+  background:#fff;color:var(--maroon);padding:.7rem 2rem;
+  border:none;border-radius:30px;font-weight:700;font-size:.92rem;
+  transition:var(--transition);
+}
+.sel-bar-btn:hover{background:var(--rose-light);transform:translateY(-2px)}
+
+/* ── BOOKING SECTION ── */
+#booking{background:linear-gradient(145deg,var(--beige) 0%,#f5e6e6 100%)}
+.booking-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:2rem;align-items:start}
+.booking-card{
+  background:#fff;border-radius:var(--radius);
+  padding:2.5rem;box-shadow:var(--shadow-md);
+}
+.booking-summary{
+  background:var(--maroon);color:#fff;
+  border-radius:var(--radius);padding:2.5rem;
+  position:sticky;top:90px;box-shadow:var(--shadow-lg);
+}
+.booking-summary-title{font-size:1.6rem;margin-bottom:1.5rem;font-weight:600}
+.summ-row{
+  display:flex;justify-content:space-between;align-items:flex-start;
+  padding:.55rem 0;border-bottom:1px solid rgba(255,255,255,.12);
+  font-size:.9rem;gap:.5rem;
+}
+.summ-row:last-child{border:none;font-size:1.1rem;font-weight:700;padding-top:1rem}
+.summ-row span:first-child{opacity:.75}
+.summ-row span:last-child{text-align:right;flex:1}
+.summ-price{font-size:1.8rem;font-weight:700;font-family:'Cormorant Garamond',serif;color:var(--rose-light)}
+.form-group{margin-bottom:1.4rem}
+.form-label{
+  display:block;font-size:.78rem;font-weight:700;
+  color:var(--dark);margin-bottom:.45rem;
+  letter-spacing:.7px;text-transform:uppercase;
+}
+.form-input{
+  width:100%;padding:.85rem 1.1rem;
+  border:2px solid var(--beige-dark);border-radius:var(--radius-sm);
+  font-size:.95rem;color:var(--dark);background:#fff;
+  transition:var(--transition);outline:none;
+}
+.form-input:focus{border-color:var(--rose-gold);box-shadow:0 0 0 3px rgba(196,134,154,.15)}
+.form-input::placeholder{color:var(--gray-light)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.slots-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem}
+.slot-btn{
+  padding:.65rem .3rem;border:2px solid var(--beige-dark);
+  border-radius:8px;background:#fff;font-size:.8rem;color:var(--dark);
+  text-align:center;transition:var(--transition);
+}
+.slot-btn:hover:not(.booked):not(.blocked):not(.disabled){
+  border-color:var(--rose-gold);background:var(--beige);color:var(--maroon);
+}
+.slot-btn.selected{background:var(--maroon);border-color:var(--maroon);color:#fff;font-weight:600}
+.slot-btn.booked{background:#f5f5f5;border-color:#e0e0e0;color:#bbb;cursor:not-allowed;text-decoration:line-through}
+.slot-btn.blocked{background:#fff0f0;border-color:#ffc0c0;color:#f08080;cursor:not-allowed}
+.slot-btn.disabled{background:#f9f9f9;border-color:#e8e8e8;color:#ccc;cursor:not-allowed}
+.pay-opts{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:.8rem}
+.pay-opt{
+  border:2px solid var(--beige-dark);border-radius:var(--radius-sm);
+  padding:.9rem;cursor:pointer;text-align:center;transition:var(--transition);
+}
+.pay-opt:hover{border-color:var(--rose-gold);background:var(--beige)}
+.pay-opt.active{border-color:var(--maroon);background:linear-gradient(135deg,#fff5f8,#fff)}
+.pay-opt-icon{font-size:1.4rem;color:var(--maroon);margin-bottom:.25rem}
+.pay-opt-label{font-size:.82rem;font-weight:600;color:var(--dark)}
+.online-methods{display:none;animation:fadeIn .3s ease}
+.online-methods.show{display:block}
+.online-methods-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.7rem;margin-top:.8rem}
+.opm-btn{
+  border:2px solid var(--beige-dark);border-radius:8px;
+  padding:.8rem;cursor:pointer;text-align:center;transition:var(--transition);
+  background:#fff;
+}
+.opm-btn:hover{border-color:var(--rose-gold)}
+.opm-btn.active{border-color:var(--maroon);background:var(--beige)}
+.opm-btn span{display:block;font-size:.78rem;font-weight:600;color:var(--dark);margin-top:.25rem}
+.submit-book-btn{
+  width:100%;padding:1.1rem;background:linear-gradient(135deg,var(--rose-gold),var(--maroon));
+  color:#fff;border:none;border-radius:50px;font-size:1.05rem;font-weight:700;
+  letter-spacing:.5px;transition:var(--transition);box-shadow:0 6px 25px rgba(196,134,154,.4);
+  margin-top:.5rem;
+}
+.submit-book-btn:hover{transform:translateY(-2px);box-shadow:0 12px 35px rgba(196,134,154,.5)}
+.step-indicator{display:flex;align-items:center;gap:.5rem;margin-bottom:2rem}
+.step{
+  display:flex;align-items:center;gap:.4rem;
+  font-size:.8rem;font-weight:600;color:var(--gray-light);
+}
+.step.active{color:var(--maroon)}
+.step.done{color:var(--rose-gold)}
+.step-num{
+  width:26px;height:26px;border-radius:50%;
+  border:2px solid currentColor;display:flex;
+  align-items:center;justify-content:center;font-size:.75rem;
+}
+.step.active .step-num{background:var(--maroon);border-color:var(--maroon);color:#fff}
+.step.done .step-num{background:var(--rose-gold);border-color:var(--rose-gold);color:#fff}
+.step-line{flex:1;height:1px;background:var(--beige-dark)}
+
+/* ── BOOKING CONFIRMATION ── */
+#confirmation{display:none;padding:5rem 2rem;background:linear-gradient(145deg,var(--beige),#f5e6e6)}
+.confirm-card{
+  max-width:620px;margin:0 auto;background:#fff;
+  border-radius:var(--radius);padding:3rem;
+  box-shadow:var(--shadow-lg);text-align:center;
+}
+.confirm-icon{
+  width:85px;height:85px;border-radius:50%;
+  background:linear-gradient(135deg,#e8f5e9,#c8e6c9);
+  display:flex;align-items:center;justify-content:center;
+  font-size:2.8rem;color:#2e7d32;margin:0 auto 1.5rem;
+  animation:bounceIn .6s cubic-bezier(0.4,0,0.2,1);
+}
+@keyframes bounceIn{0%{transform:scale(0)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+.confirm-title{font-size:2.2rem;color:var(--maroon);margin-bottom:.5rem}
+.confirm-sub{font-size:.95rem;color:var(--gray);margin-bottom:1.5rem}
+.confirm-id{
+  display:inline-block;background:var(--beige);color:var(--maroon);
+  padding:.35rem 1rem;border-radius:20px;font-size:.82rem;
+  font-weight:600;letter-spacing:1px;margin-bottom:1.5rem;
+  border:1px dashed var(--rose-gold);
+}
+.confirm-details{
+  background:var(--beige);border-radius:12px;padding:1.4rem;
+  margin-bottom:1.5rem;text-align:left;
+}
+.cd-row{
+  display:flex;justify-content:space-between;align-items:flex-start;
+  padding:.45rem 0;border-bottom:1px solid var(--beige-dark);
+  font-size:.88rem;gap:.5rem;
+}
+.cd-row:last-child{border:none;font-weight:700;color:var(--maroon);font-size:.95rem}
+.cd-row span:first-child{color:var(--gray);flex-shrink:0}
+.cd-row span:last-child{text-align:right}
+.confirm-actions{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap;margin-top:1rem}
+.wa-btn{
+  background:#25D366;color:#fff;padding:.85rem 1.5rem;
+  border:none;border-radius:50px;font-size:.9rem;font-weight:600;
+  display:flex;align-items:center;gap:.5rem;transition:var(--transition);
+}
+.wa-btn:hover{background:#20ba5a;transform:translateY(-2px)}
+.cal-btn{
+  background:#4285f4;color:#fff;padding:.85rem 1.5rem;
+  border:none;border-radius:50px;font-size:.9rem;font-weight:600;
+  display:flex;align-items:center;gap:.5rem;transition:var(--transition);
+}
+.cal-btn:hover{background:#3367d6;transform:translateY(-2px)}
+.new-book-btn{
+  background:var(--beige-dark);color:var(--maroon);padding:.85rem 1.5rem;
+  border:none;border-radius:50px;font-size:.9rem;font-weight:600;
+  transition:var(--transition);
+}
+.new-book-btn:hover{background:var(--rose-light);transform:translateY(-2px)}
+
+/* ── STYLISTS ── */
+#stylists{background:var(--beige)}
+.stylists-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:1.5rem}
+.stylist-card{
+  background:#fff;border-radius:var(--radius);
+  overflow:hidden;box-shadow:var(--shadow-sm);
+  transition:var(--transition);text-align:center;
+}
+.stylist-card:hover{transform:translateY(-8px);box-shadow:var(--shadow-lg)}
+.stylist-img-wrap{position:relative;height:195px;overflow:hidden}
+.stylist-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.stylist-card:hover .stylist-img-wrap img{transform:scale(1.07)}
+.stylist-available{
+  position:absolute;top:.8rem;right:.8rem;
+  background:#4caf50;color:#fff;font-size:.65rem;
+  padding:.2rem .6rem;border-radius:10px;font-weight:600;
+}
+.stylist-available.busy{background:#ff9800}
+.stylist-info{padding:1.3rem}
+.stylist-name{font-size:1.15rem;color:var(--maroon);margin-bottom:.25rem}
+.stylist-spec{font-size:.82rem;color:var(--rose-gold);margin-bottom:.35rem;font-weight:600}
+.stylist-exp{font-size:.78rem;color:var(--gray)}
+.stylist-stars{color:var(--gold);font-size:.8rem;margin-top:.3rem}
+
+/* ── GALLERY ── */
+#gallery{background:#fff}
+.gallery-filters{
+  display:flex;gap:.7rem;justify-content:center;
+  flex-wrap:wrap;margin-bottom:2rem;
+}
+.gf-btn{
+  padding:.45rem 1.4rem;border:2px solid var(--rose-light);
+  border-radius:25px;background:transparent;color:var(--maroon);
+  font-size:.87rem;font-weight:500;transition:var(--transition);
+}
+.gf-btn.active,.gf-btn:hover{background:var(--maroon);border-color:var(--maroon);color:#fff}
+.gallery-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+  gap:1rem;
+}
+.gallery-item{
+  position:relative;border-radius:12px;overflow:hidden;
+  aspect-ratio:1;cursor:pointer;
+}
+.gallery-item img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.gallery-item:hover img{transform:scale(1.1)}
+.gallery-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(123,30,58,.8) 0%,transparent 60%);
+  opacity:0;transition:var(--transition);
+  display:flex;align-items:flex-end;padding:.9rem;
+}
+.gallery-item:hover .gallery-overlay{opacity:1}
+.gallery-overlay-txt{color:#fff;font-size:.85rem;font-weight:500}
+.gallery-zoom{
+  position:absolute;top:.7rem;right:.7rem;
+  background:rgba(255,255,255,.25);color:#fff;
+  width:35px;height:35px;border-radius:50%;border:none;
+  font-size:.9rem;opacity:0;transition:var(--transition);
+}
+.gallery-item:hover .gallery-zoom{opacity:1}
+
+/* ── CONTACT ── */
+#contact{
+  background:linear-gradient(150deg,var(--maroon-dark) 0%,var(--maroon) 100%);
+  color:#fff;
+}
+.contact-grid{display:grid;grid-template-columns:1fr 1.4fr;gap:3rem;align-items:center}
+.contact-info-title{font-size:2.5rem;font-weight:600;margin-bottom:.5rem}
+.contact-info-sub{font-size:.95rem;opacity:.8;margin-bottom:2rem;line-height:1.7}
+.ci-item{display:flex;align-items:flex-start;gap:1rem;margin-bottom:1.4rem}
+.ci-icon{
+  width:44px;height:44px;background:rgba(196,134,154,.2);
+  border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-size:1rem;color:var(--rose-light);flex-shrink:0;
+}
+.ci-label{font-size:.7rem;letter-spacing:2px;text-transform:uppercase;opacity:.6;margin-bottom:.15rem}
+.ci-value{font-size:.95rem}
+.contact-hours{
+  background:rgba(255,255,255,.07);border-radius:var(--radius-sm);
+  padding:1.2rem;margin-top:1rem;
+}
+.ch-title{font-size:1rem;font-weight:600;margin-bottom:.7rem}
+.ch-row{display:flex;justify-content:space-between;font-size:.87rem;padding:.25rem 0;opacity:.85}
+.map-box{
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+  border-radius:var(--radius);height:310px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:.8rem;color:rgba(255,255,255,.45);
+}
+.map-box i{font-size:3rem}
+.map-box p{font-size:.78rem;letter-spacing:2px;text-transform:uppercase}
+
+/* ── FOOTER ── */
+footer{background:var(--dark);color:rgba(255,255,255,.68);padding:3.5rem 2rem 1.2rem}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2.5rem;margin-bottom:2.5rem}
+.footer-brand .f-name{font-size:2.1rem;color:#fff;margin-bottom:.4rem}
+.footer-brand .f-desc{font-size:.87rem;line-height:1.75;margin-bottom:1.3rem}
+.social-row{display:flex;gap:.7rem}
+.s-icon{
+  width:38px;height:38px;border-radius:50%;
+  background:rgba(255,255,255,.1);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:.88rem;transition:var(--transition);
+}
+.s-icon:hover{transform:translateY(-3px)}
+.s-icon.ig:hover{background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)}
+.s-icon.fb:hover{background:#1877f2}
+.s-icon.wa:hover{background:#25D366}
+.s-icon.yt:hover{background:#ff0000}
+.f-heading{color:#fff;font-size:1.15rem;margin-bottom:1rem}
+.f-links{list-style:none}
+.f-links li{margin-bottom:.55rem}
+.f-links a{color:rgba(255,255,255,.6);font-size:.87rem;transition:var(--transition)}
+.f-links a:hover{color:var(--rose-light)}
+.footer-hr{border:none;border-top:1px solid rgba(255,255,255,.1);margin:1rem 0}
+.footer-bottom{display:flex;justify-content:space-between;font-size:.82rem;flex-wrap:wrap;gap:.8rem}
+
+/* ── LIGHTBOX ── */
+#lightbox{
+  position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:9500;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;visibility:hidden;transition:var(--transition);
+}
+#lightbox.active{opacity:1;visibility:visible}
+#lightbox img{max-width:90vw;max-height:88vh;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.lb-close{
+  position:absolute;top:1.2rem;right:1.5rem;color:#fff;
+  font-size:2rem;background:none;border:none;transition:var(--transition);
+}
+.lb-close:hover{color:var(--rose-gold);transform:rotate(90deg)}
+
+/* ── MODALS ── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:8000;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;visibility:hidden;transition:var(--transition);
+  padding:1rem;backdrop-filter:blur(6px);
+}
+.modal-overlay.active{opacity:1;visibility:visible}
+.modal{
+  background:#fff;border-radius:var(--radius);padding:2.5rem;
+  max-width:520px;width:100%;max-height:90vh;overflow-y:auto;
+  transform:scale(.92);transition:var(--transition);position:relative;
+}
+.modal-overlay.active .modal{transform:scale(1)}
+.modal-close{
+  position:absolute;top:1rem;right:1rem;
+  background:var(--beige);border:none;width:33px;height:33px;
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:.9rem;transition:var(--transition);
+}
+.modal-close:hover{background:var(--maroon);color:#fff}
+.modal-title{font-size:1.9rem;color:var(--maroon);margin-bottom:.4rem}
+.modal-sub{font-size:.88rem;color:var(--gray);margin-bottom:1.5rem}
+.modal-tabs{display:flex;gap:.5rem;margin-bottom:1.5rem;border-bottom:2px solid var(--beige-dark);padding-bottom:.8rem}
+.m-tab{
+  padding:.4rem 1rem;border:none;background:transparent;
+  color:var(--gray);font-family:'Raleway',sans-serif;
+  font-size:.88rem;font-weight:600;cursor:pointer;
+  border-radius:20px;transition:var(--transition);
+}
+.m-tab.active{background:var(--maroon);color:#fff}
+.m-tab-panel{display:none}
+.m-tab-panel.active{display:block;animation:fadeIn .3s ease}
+
+/* ── ADMIN DASHBOARD ── */
+#admin-dashboard{display:none;background:#f4efef;min-height:100vh}
+#admin-dashboard.visible{display:flex}
+.adm-sidebar{
+  width:255px;background:var(--maroon);color:#fff;
+  display:flex;flex-direction:column;
+  position:fixed;top:0;left:0;height:100vh;
+  overflow-y:auto;z-index:500;transition:var(--transition);
+}
+.adm-sidebar-header{
+  padding:1.8rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.1);
+}
+.adm-sidebar-logo{font-size:1.5rem;font-weight:600;margin-bottom:.25rem}
+.adm-sidebar-sub{font-size:.7rem;opacity:.65;letter-spacing:1px}
+.adm-nav{padding:.8rem 0;flex:1}
+.adm-nav-item{
+  display:flex;align-items:center;gap:.75rem;
+  padding:.85rem 1.5rem;cursor:pointer;
+  color:rgba(255,255,255,.72);font-size:.88rem;font-weight:500;
+  transition:var(--transition);border-left:3px solid transparent;
+}
+.adm-nav-item:hover,.adm-nav-item.active{
+  background:rgba(255,255,255,.1);
+  color:#fff;border-left-color:var(--rose-light);
+}
+.adm-nav-item i{width:18px;text-align:center;font-size:.95rem}
+.adm-notif-badge{
+  background:#f44336;color:#fff;border-radius:50%;
+  width:17px;height:17px;font-size:.6rem;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-weight:700;margin-left:auto;
+}
+.adm-sidebar-footer{padding:1rem 1.5rem;border-top:1px solid rgba(255,255,255,.1)}
+.adm-logout-btn{
+  width:100%;padding:.65rem;background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:8px;
+  font-family:'Raleway',sans-serif;font-size:.85rem;transition:var(--transition);
+}
+.adm-logout-btn:hover{background:rgba(255,255,255,.2)}
+.adm-main{margin-left:255px;flex:1;padding:1.8rem;min-height:100vh}
+.adm-topbar{
+  background:#fff;border-radius:var(--radius);padding:1.3rem 1.8rem;
+  margin-bottom:1.8rem;display:flex;align-items:center;
+  justify-content:space-between;box-shadow:var(--shadow-sm);
+}
+.adm-page-title{font-size:1.75rem;color:var(--maroon)}
+.adm-back-btn{
+  background:var(--beige);color:var(--maroon);border:none;
+  padding:.55rem 1.2rem;border-radius:8px;font-family:'Raleway',sans-serif;
+  font-size:.85rem;font-weight:600;transition:var(--transition);
+  display:flex;align-items:center;gap:.4rem;
+}
+.adm-back-btn:hover{background:var(--maroon);color:#fff}
+.adm-section{display:none}
+.adm-section.active{display:block;animation:fadeIn .3s ease}
+.adm-card{
+  background:#fff;border-radius:var(--radius);
+  padding:1.4rem;box-shadow:var(--shadow-sm);margin-bottom:1.5rem;
+}
+.adm-card-title{
+  font-size:1.2rem;color:var(--maroon);margin-bottom:.9rem;
+  padding-bottom:.6rem;border-bottom:2px solid var(--beige-dark);
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;
+}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:1.3rem;margin-bottom:1.8rem}
+.stat-card{
+  background:#fff;border-radius:var(--radius);padding:1.3rem;
+  box-shadow:var(--shadow-sm);border-left:4px solid var(--maroon);
+}
+.stat-card.rose{border-left-color:var(--rose-gold)}
+.stat-card.gold{border-left-color:var(--gold)}
+.stat-card.green{border-left-color:#4caf50}
+.stat-value{font-size:2.4rem;font-weight:700;font-family:'Cormorant Garamond',serif;color:var(--maroon)}
+.stat-card.rose .stat-value{color:var(--rose-gold)}
+.stat-card.gold .stat-value{color:var(--gold)}
+.stat-card.green .stat-value{color:#4caf50}
+.stat-label{font-size:.8rem;color:var(--gray);margin-top:.2rem}
+.data-table{width:100%;border-collapse:collapse;font-size:.88rem}
+.data-table th{
+  background:var(--beige);padding:.75rem 1rem;text-align:left;
+  font-size:.72rem;text-transform:uppercase;letter-spacing:1px;
+  color:var(--maroon);border-bottom:2px solid var(--beige-dark);
+}
+.data-table td{
+  padding:.75rem 1rem;border-bottom:1px solid var(--beige);
+  color:var(--dark);
+}
+.data-table tr:hover td{background:#fff8f8}
+.data-table-wrap{overflow-x:auto}
+.badge{display:inline-block;padding:.2rem .65rem;border-radius:20px;font-size:.72rem;font-weight:700}
+.badge-confirmed{background:#e8f5e9;color:#2e7d32}
+.badge-cancelled{background:#ffebee;color:#c62828}
+.badge-pending{background:#fff8e1;color:#f57f17}
+.badge-paid{background:#e8f5e9;color:#1b5e20}
+.badge-unpaid{background:#fff8e1;color:#e65100}
+.adm-btn{
+  display:inline-flex;align-items:center;gap:.45rem;
+  padding:.65rem 1.3rem;background:var(--maroon);color:#fff;
+  border:none;border-radius:8px;font-family:'Raleway',sans-serif;
+  font-size:.87rem;font-weight:600;transition:var(--transition);
+}
+.adm-btn:hover{background:var(--maroon-dark);transform:translateY(-1px)}
+.adm-btn-sm{padding:.4rem .9rem;font-size:.78rem;border-radius:6px}
+.adm-btn-rose{background:var(--rose-gold)}
+.adm-btn-rose:hover{background:#b07085}
+.adm-btn-outline{background:transparent;color:var(--maroon);border:2px solid var(--maroon)}
+.adm-btn-outline:hover{background:var(--maroon);color:#fff}
+.adm-btn-danger{background:#ffebee;color:#c62828;border:none}
+.adm-btn-danger:hover{background:#c62828;color:#fff}
+.adm-btn-edit{background:#e3f2fd;color:#1565c0;border:none}
+.adm-btn-edit:hover{background:#1565c0;color:#fff}
+.adm-btn-success{background:#e8f5e9;color:#2e7d32;border:none}
+.adm-btn-success:hover{background:#2e7d32;color:#fff}
+.adm-form-group{margin-bottom:1.2rem}
+.adm-form-label{
+  display:block;font-size:.77rem;font-weight:700;
+  color:var(--dark);margin-bottom:.4rem;letter-spacing:.5px;text-transform:uppercase;
+}
+.adm-form-input{
+  width:100%;padding:.78rem 1rem;
+  border:1.5px solid var(--beige-dark);border-radius:8px;
+  font-size:.92rem;color:var(--dark);background:#fff;
+  transition:var(--transition);outline:none;
+  font-family:'Raleway',sans-serif;
+}
+.adm-form-input:focus{border-color:var(--rose-gold);box-shadow:0 0 0 3px rgba(196,134,154,.12)}
+.adm-form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.slot-mgmt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(125px,1fr));gap:.7rem}
+.slot-mgmt-item{
+  padding:.65rem .5rem;border:2px solid var(--beige-dark);
+  border-radius:8px;background:#fff;cursor:pointer;
+  font-size:.82rem;text-align:center;transition:var(--transition);
+  display:flex;align-items:center;justify-content:center;gap:.4rem;font-family:'Raleway',sans-serif;
+}
+.slot-mgmt-item.blocked{background:#fff0f0;border-color:#ffc0c0;color:#c62828}
+.slot-mgmt-item:hover{border-color:var(--rose-gold)}
+.blocked-tags{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.7rem}
+.blocked-tag{
+  background:#ffebee;color:#c62828;padding:.3rem .8rem;
+  border-radius:20px;font-size:.78rem;
+  display:flex;align-items:center;gap:.4rem;
+}
+.blocked-tag button{background:none;border:none;color:inherit;cursor:pointer;padding:0;font-size:.9rem;line-height:1}
+.gallery-admin-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.8rem;
+}
+.ga-item{
+  position:relative;border-radius:10px;overflow:hidden;
+  aspect-ratio:1;border:2px solid var(--beige-dark);
+}
+.ga-item img{width:100%;height:100%;object-fit:cover}
+.ga-item-overlay{
+  position:absolute;inset:0;background:rgba(123,30,58,.7);
+  opacity:0;transition:var(--transition);
+  display:flex;align-items:center;justify-content:center;gap:.5rem;
+}
+.ga-item:hover .ga-item-overlay{opacity:1}
+.banner-admin-list{display:flex;flex-direction:column;gap:1rem}
+.banner-admin-item{
+  background:var(--beige);border-radius:10px;padding:1rem;
+  display:flex;align-items:center;gap:1rem;flex-wrap:wrap;
+}
+.banner-admin-thumb{
+  width:80px;height:55px;border-radius:8px;
+  object-fit:cover;background:var(--beige-dark);flex-shrink:0;
+}
+.banner-admin-info{flex:1;min-width:150px}
+.banner-admin-title{font-weight:600;color:var(--maroon);font-size:.95rem}
+.banner-admin-sub{font-size:.8rem;color:var(--gray)}
+.toggle-switch{
+  display:flex;align-items:center;gap:.7rem;cursor:pointer;user-select:none;
+}
+.toggle-track{
+  width:44px;height:24px;background:#ddd;border-radius:12px;
+  position:relative;transition:var(--transition);flex-shrink:0;
+}
+.toggle-track.on{background:var(--maroon)}
+.toggle-thumb{
+  position:absolute;top:2px;left:2px;width:20px;height:20px;
+  background:#fff;border-radius:50%;transition:var(--transition);
+  box-shadow:0 1px 4px rgba(0,0,0,.2);
+}
+.toggle-track.on .toggle-thumb{left:22px}
+.toggle-label{font-size:.85rem;font-weight:500;color:var(--dark)}
+.adm-mobile-toggle{
+  display:none;position:fixed;top:1rem;left:1rem;z-index:601;
+  background:var(--maroon);color:#fff;border:none;
+  width:40px;height:40px;border-radius:8px;
+  align-items:center;justify-content:center;font-size:1.1rem;
+}
+.adm-sidebar-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:499;
+}
+.settings-section-title{
+  font-size:1.1rem;color:var(--maroon);margin:1.5rem 0 1rem;
+  display:flex;align-items:center;gap:.5rem;
+  padding-bottom:.5rem;border-bottom:1px solid var(--beige-dark);
+}
+.payment-info-box{
+  background:var(--beige);border-radius:var(--radius-sm);
+  padding:1rem;margin-top:.5rem;border-left:3px solid var(--rose-gold);
+}
+.payment-info-box p{font-size:.82rem;color:var(--gray);line-height:1.7}
+
+/* ── TOAST ── */
+#toast-wrap{
+  position:fixed;top:5rem;right:1rem;z-index:10000;
+  display:flex;flex-direction:column;gap:.7rem;pointer-events:none;
+}
+.toast{
+  background:#fff;border-radius:10px;padding:.9rem 1.4rem;
+  box-shadow:0 5px 20px rgba(0,0,0,.15);
+  display:flex;align-items:center;gap:.75rem;
+  min-width:270px;max-width:340px;
+  transform:translateX(120%);transition:transform .4s cubic-bezier(0.4,0,0.2,1);
+  border-left:4px solid var(--maroon);pointer-events:auto;
+}
+.toast.show{transform:translateX(0)}
+.toast.success{border-left-color:#2e7d32}
+.toast.error{border-left-color:#c62828}
+.toast.info{border-left-color:#1565c0}
+.toast.warning{border-left-color:#f57f17}
+.toast-ico{font-size:1.15rem}
+.toast.success .toast-ico{color:#2e7d32}
+.toast.error .toast-ico{color:#c62828}
+.toast.info .toast-ico{color:#1565c0}
+.toast.warning .toast-ico{color:#f57f17}
+.toast-msg{font-size:.88rem;color:var(--dark);line-height:1.4}
+
+/* ── SCROLL TOP ── */
+#scroll-top{
+  position:fixed;bottom:2rem;right:2rem;z-index:200;
+  width:44px;height:44px;background:var(--maroon);color:#fff;
+  border:none;border-radius:50%;font-size:1rem;
+  box-shadow:var(--shadow-md);opacity:0;visibility:hidden;
+  transition:var(--transition);
+}
+#scroll-top.visible{opacity:1;visibility:visible}
+#scroll-top:hover{background:var(--rose-gold);transform:translateY(-3px)}
+
+/* ── UPI MODAL ── */
+.upi-display{
+  background:var(--beige);border-radius:12px;padding:1.5rem;
+  text-align:center;margin:1rem 0;
+}
+.upi-id-box{
+  font-size:1.2rem;font-weight:700;color:var(--maroon);
+  background:#fff;padding:.8rem 1.2rem;border-radius:8px;
+  border:2px dashed var(--rose-gold);margin:.8rem 0;display:inline-block;
+}
+.upi-amount{font-size:2rem;font-weight:700;font-family:'Cormorant Garamond',serif;color:var(--maroon);margin:.5rem 0}
+.upi-apps{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;margin-top:1rem}
+.upi-app-btn{
+  background:#fff;border:2px solid var(--beige-dark);
+  border-radius:8px;padding:.6rem 1rem;cursor:pointer;
+  font-size:.82rem;font-weight:600;color:var(--dark);
+  transition:var(--transition);display:flex;align-items:center;gap:.4rem;
+}
+.upi-app-btn:hover{border-color:var(--rose-gold);background:var(--beige)}
+.otp-display{
+  font-size:2.5rem;font-weight:700;letter-spacing:.5rem;
+  color:var(--maroon);text-align:center;padding:1.2rem;
+  background:var(--beige);border-radius:12px;margin:1rem 0;
+  font-family:'Cormorant Garamond',serif;border:2px dashed var(--rose-gold);
+}
+.otp-digits{display:flex;gap:.5rem;justify-content:center;margin:1rem 0}
+.otp-digit{
+  width:45px;height:55px;border:2px solid var(--beige-dark);
+  border-radius:8px;text-align:center;font-size:1.5rem;
+  font-weight:700;color:var(--maroon);
+  outline:none;transition:var(--transition);
+}
+.otp-digit:focus{border-color:var(--rose-gold);box-shadow:0 0 0 3px rgba(196,134,154,.15)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1024px){
+  .footer-grid{grid-template-columns:1fr 1fr}
+  .contact-grid{grid-template-columns:1fr}
+}
+@media(max-width:900px){
+  .booking-grid{grid-template-columns:1fr}
+  .booking-summary{position:static}
+  .adm-sidebar{transform:translateX(-100%)}
+  .adm-sidebar.open{transform:translateX(0)}
+  .adm-main{margin-left:0}
+  .adm-mobile-toggle{display:flex}
+  .adm-sidebar-overlay.show{display:block}
+}
+@media(max-width:768px){
+  .nav-links{
+    display:none;position:fixed;inset:0;
+    background:var(--maroon);flex-direction:column;
+    align-items:center;justify-content:center;gap:1.8rem;z-index:999;
+  }
+  .nav-links.open{display:flex}
+  .nav-links a{font-size:1.2rem;color:#fff !important}
+  .nav-links a::after{display:none}
+  .hamburger{display:flex}
+  #navbar.scrolled .hamburger span{background:var(--maroon)}
+  .hamburger.open span{background:#fff !important}
+  .slots-grid{grid-template-columns:repeat(2,1fr)}
+  .form-row{grid-template-columns:1fr}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .footer-grid{grid-template-columns:1fr 1fr}
+  .adm-form-row{grid-template-columns:1fr}
+  .online-methods-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:480px){
+  .section{padding:3.5rem 1.2rem}
+  .hero-stats{gap:1.5rem}
+  .pay-opts{grid-template-columns:1fr 1fr}
+  .slots-grid{grid-template-columns:repeat(2,1fr)}
+  .footer-grid{grid-template-columns:1fr}
+  .stats-row{grid-template-columns:1fr}
+  .confirm-actions{flex-direction:column;align-items:center}
+  .wa-btn,.cal-btn,.new-book-btn{width:100%;justify-content:center}
+  .hero-btns{flex-direction:column;align-items:center}
+  .btn-primary,.btn-outline{width:100%;max-width:280px;text-align:center}
+  .booking-card{padding:1.5rem}
+  .modal{padding:1.5rem}
+}
+@media(max-width:360px){
+  .slots-grid{grid-template-columns:1fr 1fr}
+  .online-methods-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ================================================================ LOADING SCREEN -->
+<div id="loading-screen">
+  <div class="load-inner">
+    <span class="load-flower">🌼</span>
+    <div class="load-name" id="load-name">Daffodil</div>
+    <div class="load-sub">Beauty Salon</div>
+    <div class="load-bar"><div class="load-bar-fill"></div></div>
+  </div>
+</div>
+
+<!-- ================================================================ MAIN WEBSITE -->
+<div id="main-site">
+
+<!-- ── NAVBAR ── -->
+<nav id="navbar">
+  <a class="nav-logo" onclick="goHome()" aria-label="Go Home">
+    <span class="nav-logo-icon">🌼</span>
+    <span class="nav-logo-text" id="nav-salon-name">Daffodil</span>
+  </a>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="#services">Services</a></li>
+    <li><a href="#booking">Book Now</a></li>
+    <li><a href="#stylists">Our Team</a></li>
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#booking" class="nav-book-btn">📅 Appointment</a></li>
+    <li><button class="nav-admin-btn" onclick="openAdminLogin()">🔐 Admin</button></li>
+  </ul>
+  <div class="hamburger" id="hamburger" onclick="toggleMobileMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-particles" id="hero-particles"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow" id="hero-eyebrow">✨ Premium Beauty Experience</div>
+    <h1 class="hero-title" id="hero-title">
+      <em id="hero-title-name">Daffodil</em><br>Beauty Salon
+    </h1>
+    <p class="hero-tagline">Beauty · Care · Confidence</p>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="scrollToBooking()">📅 Book Appointment</button>
+      <button class="btn-outline" onclick="document.getElementById('gallery').scrollIntoView({behavior:'smooth'})">🖼 View Gallery</button>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="hero-stat-num">500+</div><div class="hero-stat-lbl">Happy Clients</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">10+</div><div class="hero-stat-lbl">Expert Stylists</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">5★</div><div class="hero-stat-lbl">Google Rating</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">8yr</div><div class="hero-stat-lbl">Of Excellence</div></div>
+  </div>
+</section>
+
+<!-- ── BANNERS ── -->
+<section id="banners">
+  <div class="banner-wrap">
+    <div id="banner-slides-container"></div>
+    <button class="b-nav b-prev" onclick="moveBanner(-1)"><i class="fas fa-chevron-left"></i></button>
+    <button class="b-nav b-next" onclick="moveBanner(1)"><i class="fas fa-chevron-right"></i></button>
+    <div class="b-dots" id="b-dots"></div>
+  </div>
+</section>
+
+<!-- ── SERVICES ── -->
+<section id="services" class="section" style="background:#fff">
+  <div class="container">
+    <div class="sec-header">
+      <div class="sec-eyebrow">— Our Services —</div>
+      <h2 class="sec-title">What We Offer</h2>
+      <div class="sec-divider"></div>
+      <p class="sec-sub">From classic cuts to luxury treatments — select your services below and book instantly.</p>
+    </div>
+    <div class="services-grid" id="services-grid"></div>
+  </div>
+</section>
+
+<!-- ── FLOATING SELECTED BAR ── -->
+<div class="selected-bar" id="selected-bar">
+  <div class="sel-bar-left">
+    <span class="sel-bar-count" id="sel-count">0 services</span>
+    <span id="sel-names" style="font-size:.82rem;opacity:.85"></span>
+  </div>
+  <div style="display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap">
+    <span class="sel-bar-total" id="sel-total">₹0</span>
+    <button class="sel-bar-btn" onclick="scrollToBooking()">Book These Services →</button>
+  </div>
+</div>
+
+<!-- ── BOOKING ── -->
+<section id="booking" class="section">
+  <div class="container">
+    <div class="sec-header">
+      <div class="sec-eyebrow">— Easy Booking —</div>
+      <h2 class="sec-title">Book Your Appointment</h2>
+      <div class="sec-divider"></div>
+      <p class="sec-sub">Choose your services, pick a time, and confirm — it's that simple.</p>
+    </div>
+    <div class="booking-grid">
+      <!-- Form -->
+      <div class="booking-card">
+        <div class="step-indicator">
+          <div class="step active" id="step1"><div class="step-num">1</div><span>Details</span></div>
+          <div class="step-line"></div>
+          <div class="step" id="step2"><div class="step-num">2</div><span>Schedule</span></div>
+          <div class="step-line"></div>
+          <div class="step" id="step3"><div class="step-num">3</div><span>Payment</span></div>
+        </div>
+
+        <!-- Step 1: Personal Details -->
+        <div id="booking-step1">
+          <h3 style="color:var(--maroon);font-size:1.4rem;margin-bottom:1.2rem">Personal Details</h3>
+          <div class="form-group">
+            <label class="form-label">Full Name *</label>
+            <input type="text" id="b-name" class="form-input" placeholder="Your full name">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Phone Number *</label>
+              <input type="tel" id="b-phone" class="form-input" placeholder="+91 XXXXXXXXXX">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <input type="email" id="b-email" class="form-input" placeholder="your@email.com">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Services Selected</label>
+            <div id="booking-services-display" style="background:var(--beige);border-radius:10px;padding:1rem;min-height:50px;font-size:.88rem;color:var(--gray)">
+              No services selected. <a href="#services" style="color:var(--maroon);font-weight:600">← Choose from Services section</a>
+            </div>
+          </div>
+          <button class="submit-book-btn" style="margin-top:1rem" onclick="bookingNextStep(2)">Continue to Schedule →</button>
+        </div>
+
+        <!-- Step 2: Schedule -->
+        <div id="booking-step2" style="display:none">
+          <h3 style="color:var(--maroon);font-size:1.4rem;margin-bottom:1.2rem">Choose Schedule</h3>
+          <div class="form-group">
+            <label class="form-label">Appointment Date *</label>
+            <input type="date" id="b-date" class="form-input" onchange="loadSlots()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Select Time Slot *</label>
+            <div class="slots-grid" id="slots-grid"></div>
+          </div>
+          <div style="display:flex;gap:.8rem;margin-top:1.2rem">
+            <button class="submit-book-btn" style="flex:0 0 auto;background:var(--beige-dark);color:var(--dark)" onclick="bookingNextStep(1)">← Back</button>
+            <button class="submit-book-btn" style="flex:1" onclick="bookingNextStep(3)">Continue to Payment →</button>
+          </div>
+        </div>
+
+        <!-- Step 3: Payment -->
+        <div id="booking-step3" style="display:none">
+          <h3 style="color:var(--maroon);font-size:1.4rem;margin-bottom:1.2rem">Payment Method</h3>
+          <div class="pay-opts">
+            <div class="pay-opt active" id="pay-salon" onclick="selectPayment('salon')">
+              <div class="pay-opt-icon">🏪</div>
+              <div class="pay-opt-label">Pay at Salon</div>
+            </div>
+            <div class="pay-opt" id="pay-online" onclick="selectPayment('online')">
+              <div class="pay-opt-icon">💳</div>
+              <div class="pay-opt-label">Pay Online</div>
+            </div>
+          </div>
+          <div class="online-methods" id="online-methods">
+            <p style="font-size:.8rem;color:var(--gray);margin-bottom:.5rem">Select online payment method:</p>
+            <div class="online-methods-grid">
+              <div class="opm-btn" id="opm-upi" onclick="selectOnlineMethod('upi')">
+                <i class="fas fa-mobile-alt" style="font-size:1.4rem;color:#6739b7"></i>
+                <span>UPI / QR</span>
+              </div>
+              <div class="opm-btn" id="opm-razorpay" onclick="selectOnlineMethod('razorpay')">
+                <i class="fas fa-credit-card" style="font-size:1.4rem;color:var(--maroon)"></i>
+                <span>Card / Net Banking</span>
+              </div>
+              <div class="opm-btn" id="opm-wallet" onclick="selectOnlineMethod('wallet')">
+                <i class="fas fa-wallet" style="font-size:1.4rem;color:#ff9800"></i>
+                <span>Wallet</span>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;gap:.8rem;margin-top:1.5rem">
+            <button class="submit-book-btn" style="flex:0 0 auto;background:var(--beige-dark);color:var(--dark)" onclick="bookingNextStep(2)">← Back</button>
+            <button class="submit-book-btn" style="flex:1" id="confirm-book-btn" onclick="confirmBooking()">✅ Confirm Appointment</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div class="booking-summary">
+        <div class="booking-summary-title">📋 Booking Summary</div>
+        <div id="summ-services-list">
+          <p style="opacity:.65;font-size:.88rem">No services selected yet</p>
+        </div>
+        <div class="summ-row" style="margin-top:1rem">
+          <span>📅 Date</span><span id="summ-date">—</span>
+        </div>
+        <div class="summ-row">
+          <span>⏰ Time</span><span id="summ-time">—</span>
+        </div>
+        <div class="summ-row">
+          <span>💳 Payment</span><span id="summ-payment">Pay at Salon</span>
+        </div>
+        <div class="summ-row" style="border-top:1px solid rgba(255,255,255,.2);padding-top:1rem;margin-top:.5rem">
+          <span style="font-size:1rem;font-weight:700">Total</span>
+          <span class="summ-price" id="summ-total">₹0</span>
+        </div>
+        <div style="margin-top:1.5rem;background:rgba(255,255,255,.1);border-radius:10px;padding:1rem;font-size:.82rem;opacity:.8;line-height:1.6">
+          <i class="fas fa-info-circle" style="margin-right:.4rem"></i>
+          Select services from the Services section above to add them to your booking.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CONFIRMATION ── -->
+<div id="confirmation">
+  <div class="confirm-card">
+    <div class="confirm-icon">✅</div>
+    <h2 class="confirm-title">Appointment Confirmed!</h2>
+    <p class="confirm-sub">Your booking has been successfully placed. We look forward to seeing you!</p>
+    <div class="confirm-id" id="confirm-booking-id">Booking ID: #DFF-000</div>
+    <div class="confirm-details" id="confirm-details"></div>
+    <div class="confirm-actions">
+      <button class="wa-btn" id="wa-confirm-btn" onclick="sendWhatsAppConfirmation()">
+        <i class="fab fa-whatsapp"></i> WhatsApp Confirmation
+      </button>
+      <button class="cal-btn" id="cal-confirm-btn" onclick="addToCalendar()">
+        <i class="fab fa-google"></i> Add to Calendar
+      </button>
+      <button class="new-book-btn" onclick="resetBooking()">+ New Booking</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── STYLISTS ── -->
+<section id="stylists" class="section" style="background:var(--beige)">
+  <div class="container">
+    <div class="sec-header">
+      <div class="sec-eyebrow">— Meet Our Team —</div>
+      <h2 class="sec-title">Expert Stylists</h2>
+      <div class="sec-divider"></div>
+      <p class="sec-sub">Our trained professionals are passionate about making you look and feel your best.</p>
+    </div>
+    <div class="stylists-grid" id="stylists-grid"></div>
+  </div>
+</section>
+
+<!-- ── GALLERY ── -->
+<section id="gallery" class="section" style="background:#fff">
+  <div class="container">
+    <div class="sec-header">
+      <div class="sec-eyebrow">— Our Work —</div>
+      <h2 class="sec-title">Beauty Gallery</h2>
+      <div class="sec-divider"></div>
+      <p class="sec-sub">Browse our portfolio of stunning transformations and beautiful work.</p>
+    </div>
+    <div class="gallery-filters" id="gallery-filters">
+      <button class="gf-btn active" onclick="filterGallery('all',this)">All</button>
+      <button class="gf-btn" onclick="filterGallery('hair',this)">Hair</button>
+      <button class="gf-btn" onclick="filterGallery('makeup',this)">Makeup</button>
+      <button class="gf-btn" onclick="filterGallery('nails',this)">Nails</button>
+      <button class="gf-btn" onclick="filterGallery('skin',this)">Skin</button>
+    </div>
+    <div class="gallery-grid" id="gallery-grid"></div>
+  </div>
+</section>
+
+<!-- ── CONTACT ── -->
+<section id="contact" class="section">
+  <div class="container">
+    <div class="contact-grid">
+      <div>
+        <div class="sec-eyebrow" style="color:var(--rose-light)">— Find Us —</div>
+        <h2 class="contact-info-title">Visit Our Salon</h2>
+        <p class="contact-info-sub" id="contact-info-sub">We'd love to welcome you. Come in for a consultation or book your appointment online.</p>
+        <div class="ci-item">
+          <div class="ci-icon"><i class="fas fa-map-marker-alt"></i></div>
+          <div><div class="ci-label">Address</div><div class="ci-value" id="ci-address">12, Rose Avenue, Green Park, New Delhi - 110016</div></div>
+        </div>
+        <div class="ci-item">
+          <div class="ci-icon"><i class="fas fa-phone"></i></div>
+          <div><div class="ci-label">Phone</div><div class="ci-value" id="ci-phone">+91 7467977770</div></div>
+        </div>
+        <div class="ci-item">
+          <div class="ci-icon"><i class="fas fa-envelope"></i></div>
+          <div><div class="ci-label">Email</div><div class="ci-value" id="ci-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="75111413131a111c190614191a1b351218141c195b161a18">[email&#160;protected]</a></div></div>
+        </div>
+        <div class="contact-hours">
+          <div class="ch-title">🕐 Business Hours</div>
+          <div id="contact-hours-list"></div>
+        </div>
+      </div>
+      <div class="map-box">
+        <i class="fas fa-map-marked-alt"></i>
+        <p id="contact-map-name">Daffodil Beauty Salon</p>
+        <button class="btn-primary" style="font-size:.85rem;padding:.7rem 1.5rem;margin-top:.5rem" onclick="openMaps()">
+          <i class="fas fa-directions"></i> Get Directions
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="f-name" id="footer-name">🌼 Daffodil</div>
+        <p class="f-desc" id="footer-desc">Your premium beauty destination. We believe every person deserves to feel confident, beautiful, and cared for.</p>
+        <div class="social-row" id="social-row"></div>
+      </div>
+      <div>
+        <h4 class="f-heading">Quick Links</h4>
+        <ul class="f-links">
+          <li><a href="#hero" onclick="goHome()">Home</a></li>
+          <li><a href="#services">Services</a></li>
+          <li><a href="#booking">Book Now</a></li>
+          <li><a href="#stylists">Our Team</a></li>
+          <li><a href="#gallery">Gallery</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="f-heading">Services</h4>
+        <ul class="f-links" id="footer-services-list"></ul>
+      </div>
+      <div>
+        <h4 class="f-heading">Contact</h4>
+        <ul class="f-links">
+          <li id="f-address-li"><a href="#contact"><i class="fas fa-map-marker-alt" style="margin-right:.4rem"></i><span id="f-address">12, Rose Avenue, New Delhi</span></a></li>
+          <li id="f-phone-li"><a href="#contact"><i class="fas fa-phone" style="margin-right:.4rem"></i><span id="f-phone">+91 7467977770</span></a></li>
+          <li id="f-email-li"><a href="#contact"><i class="fas fa-envelope" style="margin-right:.4rem"></i><span id="f-email"><span class="__cf_email__" data-cfemail="e4808582828b808d889785888b8aa48389858d88ca878b89">[email&#160;protected]</span></span></a></li>
+        </ul>
+        <div style="margin-top:1rem;font-size:.82rem;opacity:.65">
+          <i class="fas fa-clock" style="margin-right:.4rem"></i>
+          <span id="f-hours">Mon–Sat: 10AM–8PM</span>
+        </div>
+      </div>
+    </div>
+    <hr class="footer-hr">
+    <div class="footer-bottom">
+      <span>© <span id="f-year">2025</span> <span id="f-copy-name">Daffodil Beauty Salon</span>. All rights reserved.</span>
+      <span>Made with ❤️ for beauty professionals</span>
+    </div>
+  </div>
+</footer>
+
+</div><!-- #main-site -->
+
+<!-- ================================================================ ADMIN DASHBOARD -->
+<div id="admin-dashboard">
+  <button class="adm-mobile-toggle" id="adm-mob-toggle" onclick="toggleAdminSidebar()"><i class="fas fa-bars"></i></button>
+  <div class="adm-sidebar-overlay" id="adm-overlay" onclick="toggleAdminSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside class="adm-sidebar" id="adm-sidebar">
+    <div class="adm-sidebar-header">
+      <div class="adm-sidebar-logo">🌼 Daffodil Admin</div>
+      <div class="adm-sidebar-sub">OWNER DASHBOARD</div>
+    </div>
+    <nav class="adm-nav">
+      <div class="adm-nav-item active" onclick="showAdmSection('overview')"><i class="fas fa-tachometer-alt"></i> Overview</div>
+      <div class="adm-nav-item" onclick="showAdmSection('bookings')"><i class="fas fa-calendar-check"></i> Bookings <span class="adm-notif-badge" id="new-booking-badge" style="display:none">0</span></div>
+      <div class="adm-nav-item" onclick="showAdmSection('services')"><i class="fas fa-cut"></i> Services</div>
+      <div class="adm-nav-item" onclick="showAdmSection('stylists')"><i class="fas fa-user-tie"></i> Stylists</div>
+      <div class="adm-nav-item" onclick="showAdmSection('gallery')"><i class="fas fa-images"></i> Gallery</div>
+      <div class="adm-nav-item" onclick="showAdmSection('banners')"><i class="fas fa-ad"></i> Banners</div>
+      <div class="adm-nav-item" onclick="showAdmSection('slots')"><i class="fas fa-clock"></i> Time Slots & Dates</div>
+      <div class="adm-nav-item" onclick="showAdmSection('settings')"><i class="fas fa-cog"></i> Settings</div>
+    </nav>
+    <div class="adm-sidebar-footer">
+      <button class="adm-logout-btn" onclick="adminLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="adm-main">
+    <div class="adm-topbar">
+      <div class="adm-page-title" id="adm-page-title">Dashboard Overview</div>
+      <button class="adm-back-btn" onclick="adminLogout()"><i class="fas fa-home"></i> Back to Website</button>
+    </div>
+
+    <!-- Overview -->
+    <div class="adm-section active" id="sec-overview">
+      <div class="stats-row" id="stats-row"></div>
+      <div class="adm-card">
+        <div class="adm-card-title">📅 Recent Bookings <button class="adm-btn adm-btn-sm" onclick="showAdmSection('bookings')">View All</button></div>
+        <div class="data-table-wrap"><table class="data-table" id="recent-bookings-table"><thead><tr><th>Customer</th><th>Services</th><th>Date</th><th>Time</th><th>Total</th><th>Status</th></tr></thead><tbody id="recent-bookings-body"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- Bookings -->
+    <div class="adm-section" id="sec-bookings">
+      <div class="adm-card">
+        <div class="adm-card-title">
+          All Bookings
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+            <input type="text" class="adm-form-input" style="width:200px;padding:.45rem .8rem" placeholder="Search bookings..." oninput="filterBookingsTable(this.value)" id="booking-search">
+            <select class="adm-form-input" style="width:160px;padding:.45rem .8rem" onchange="filterBookingsByStatus(this.value)">
+              <option value="">All Status</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="cancelled">Cancelled</option>
+              <option value="pending">Pending</option>
+            </select>
+          </div>
+        </div>
+        <div class="data-table-wrap"><table class="data-table" id="all-bookings-table"><thead><tr><th>ID</th><th>Customer</th><th>Phone</th><th>Services</th><th>Date</th><th>Time</th><th>Total</th><th>Payment</th><th>Status</th><th>Actions</th></tr></thead><tbody id="all-bookings-body"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- Services -->
+    <div class="adm-section" id="sec-services">
+      <div class="adm-card">
+        <div class="adm-card-title">
+          Manage Services
+          <button class="adm-btn adm-btn-sm" onclick="openServiceModal()"><i class="fas fa-plus"></i> Add Service</button>
+        </div>
+        <div class="data-table-wrap"><table class="data-table" id="services-admin-table"><thead><tr><th>Icon</th><th>Name</th><th>Price</th><th>Duration</th><th>Category</th><th>Actions</th></tr></thead><tbody id="services-admin-body"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- Stylists -->
+    <div class="adm-section" id="sec-stylists">
+      <div class="adm-card">
+        <div class="adm-card-title">
+          Manage Stylists
+          <button class="adm-btn adm-btn-sm" onclick="openStylistModal()"><i class="fas fa-plus"></i> Add Stylist</button>
+        </div>
+        <div class="data-table-wrap"><table class="data-table" id="stylists-admin-table"><thead><tr><th>Photo</th><th>Name</th><th>Specialization</th><th>Experience</th><th>Status</th><th>Actions</th></tr></thead><tbody id="stylists-admin-body"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- Gallery -->
+    <div class="adm-section" id="sec-gallery">
+      <div class="adm-card">
+        <div class="adm-card-title">
+          Manage Gallery
+          <button class="adm-btn adm-btn-sm" onclick="openGalleryAdd()"><i class="fas fa-plus"></i> Add Image</button>
+        </div>
+        <div class="gallery-admin-grid" id="gallery-admin-grid"></div>
+      </div>
+    </div>
+
+    <!-- Banners -->
+    <div class="adm-section" id="sec-banners">
+      <div class="adm-card">
+        <div class="adm-card-title">
+          Manage Promotional Banners
+          <button class="adm-btn adm-btn-sm" onclick="openBannerAdd()"><i class="fas fa-plus"></i> Add Banner</button>
+        </div>
+        <div class="banner-admin-list" id="banner-admin-list"></div>
+      </div>
+    </div>
+
+    <!-- Slots & Dates -->
+    <div class="adm-section" id="sec-slots">
+      <div class="adm-card">
+        <div class="adm-card-title">Manage Time Slots</div>
+        <p style="font-size:.85rem;color:var(--gray);margin-bottom:1rem">Toggle slots to block/unblock globally. Use "Block by Date" below for specific date blocking.</p>
+        <div class="slot-mgmt-grid" id="slot-mgmt-grid"></div>
+      </div>
+      <div class="adm-card">
+        <div class="adm-card-title">Block Specific Date</div>
+        <div style="display:flex;gap:.8rem;flex-wrap:wrap;align-items:flex-end">
+          <div class="adm-form-group" style="margin:0;flex:1;min-width:180px">
+            <label class="adm-form-label">Select Date</label>
+            <input type="date" id="block-date-input" class="adm-form-input">
+          </div>
+          <button class="adm-btn" onclick="blockFullDate()"><i class="fas fa-ban"></i> Block Full Day</button>
+          <button class="adm-btn adm-btn-rose" onclick="openSlotByDateModal()"><i class="fas fa-clock"></i> Block Specific Slots on Date</button>
+        </div>
+        <div style="margin-top:1rem">
+          <label class="adm-form-label">Fully Blocked Dates</label>
+          <div class="blocked-tags" id="blocked-dates-tags"></div>
+        </div>
+      </div>
+      <div class="adm-card">
+        <div class="adm-card-title">Block Specific Slots by Date</div>
+        <p style="font-size:.85rem;color:var(--gray);margin-bottom:1rem">Choose a date and select which time slots to block for that day only.</p>
+        <div style="display:flex;gap:.8rem;flex-wrap:wrap;align-items:flex-end">
+          <div class="adm-form-group" style="margin:0;flex:1;min-width:180px">
+            <label class="adm-form-label">Select Date</label>
+            <input type="date" id="slot-by-date-input" class="adm-form-input" onchange="loadSlotsByDate()">
+          </div>
+        </div>
+        <div class="slot-mgmt-grid" id="slot-by-date-grid" style="margin-top:1rem"></div>
+      </div>
+    </div>
+
+    <!-- Settings -->
+    <div class="adm-section" id="sec-settings">
+      <div class="adm-card">
+        <div class="adm-card-title">Salon Information</div>
+        <div class="adm-form-row">
+          <div class="adm-form-group"><label class="adm-form-label">Salon Name</label><input type="text" id="s-name" class="adm-form-input"></div>
+          <div class="adm-form-group"><label class="adm-form-label">Tagline</label><input type="text" id="s-tagline" class="adm-form-input"></div>
+        </div>
+        <div class="adm-form-group"><label class="adm-form-label">Address</label><textarea id="s-address" class="adm-form-input" rows="2" style="resize:vertical"></textarea></div>
+        <div class="adm-form-row">
+          <div class="adm-form-group"><label class="adm-form-label">Phone Number</label><input type="text" id="s-phone" class="adm-form-input"></div>
+          <div class="adm-form-group"><label class="adm-form-label">Email Address</label><input type="email" id="s-email" class="adm-form-input"></div>
+        </div>
+        <div class="adm-form-group"><label class="adm-form-label">Business Hours (e.g. Mon-Sat: 10AM-8PM)</label><input type="text" id="s-hours" class="adm-form-input"></div>
+        <div class="adm-form-group"><label class="adm-form-label">Sunday Hours (leave blank if closed)</label><input type="text" id="s-hours-sun" class="adm-form-input" placeholder="e.g. 11AM-6PM or Closed"></div>
+        <button class="adm-btn" onclick="saveSettings('info')"><i class="fas fa-save"></i> Save Salon Info</button>
+      </div>
+      <div class="adm-card">
+        <div class="adm-card-title">Social Media & Links</div>
+        <div class="adm-form-row">
+          <div class="adm-form-group"><label class="adm-form-label"><i class="fab fa-instagram" style="color:#e1306c"></i> Instagram URL</label><input type="url" id="s-instagram" class="adm-form-input" placeholder="https://instagram.com/yourpage"></div>
+          <div class="adm-form-group"><label class="adm-form-label"><i class="fab fa-facebook" style="color:#1877f2"></i> Facebook URL</label><input type="url" id="s-facebook" class="adm-form-input" placeholder="https://facebook.com/yourpage"></div>
+        </div>
+        <div class="adm-form-row">
+          <div class="adm-form-group"><label class="adm-form-label"><i class="fab fa-whatsapp" style="color:#25D366"></i> WhatsApp Number (with country code)</label><input type="text" id="s-whatsapp" class="adm-form-input" placeholder="+917467977770"></div>
+          <div class="adm-form-group"><label class="adm-form-label"><i class="fab fa-youtube" style="color:#ff0000"></i> YouTube URL</label><input type="url" id="s-youtube" class="adm-form-input" placeholder="https://youtube.com/@yourpage"></div>
+        </div>
+        <div class="adm-form-group"><label class="adm-form-label">Google Maps Link</label><input type="url" id="s-maps" class="adm-form-input" placeholder="https://maps.google.com/..."></div>
+        <button class="adm-btn" onclick="saveSettings('social')"><i class="fas fa-save"></i> Save Social Links</button>
+      </div>
+      <div class="adm-card">
+        <div class="adm-card-title">💳 Payment Settings</div>
+        <div class="payment-info-box" style="margin-bottom:1.2rem">
+          <p><strong>How payments work:</strong><br>
+          • <b>UPI payments</b> go directly to your UPI ID linked bank account instantly.<br>
+          • <b>Razorpay payments</b> (Card/Net Banking) go to your Razorpay account → your linked bank. Add your Razorpay Key ID below.<br>
+          • Create free Razorpay account at <a href="https://razorpay.com" target="_blank" style="color:var(--maroon);font-weight:600">razorpay.com</a> to get your Key ID.</p>
+        </div>
+        <div class="adm-form-row">
+          <div class="adm-form-group"><label class="adm-form-label">UPI ID</label><input type="text" id="s-upi" class="adm-form-input" placeholder="yourname@upi"></div>
+          <div class="adm-form-group"><label class="adm-form-label">UPI Display Name</label><input type="text" id="s-upi-name" class="adm-form-input" placeholder="Salon Name"></div>
+        </div>
+        <div class="adm-form-row">
+          <div class="adm-form-group"><label class="adm-form-label">Razorpay Key ID (live)</label><input type="text" id="s-rzp-key" class="adm-form-input" placeholder="rzp_live_xxxxxxxxxxxx"></div>
+          <div class="adm-form-group"><label class="adm-form-label">Account Holder Name</label><input type="text" id="s-acc-name" class="adm-form-input" placeholder="Your Name / Business Name"></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:1rem">
+          <div class="toggle-switch" onclick="togglePaymentMode()">
+            <div class="toggle-track" id="online-pay-toggle"><div class="toggle-thumb"></div></div>
+            <div class="toggle-label">Enable Online Payments</div>
+          </div>
+        </div>
+        <button class="adm-btn" onclick="saveSettings('payment')"><i class="fas fa-save"></i> Save Payment Settings</button>
+      </div>
+      <div class="adm-card">
+        <div class="adm-card-title">🔒 Security — Change Password</div>
+        <div class="adm-form-row">
+          <div class="adm-form-group"><label class="adm-form-label">Current Password</label><input type="password" id="s-cur-pass" class="adm-form-input" placeholder="Enter current password"></div>
+          <div class="adm-form-group"><label class="adm-form-label">New Password</label><input type="password" id="s-new-pass" class="adm-form-input" placeholder="Enter new password"></div>
+        </div>
+        <div class="adm-form-group" style="max-width:300px"><label class="adm-form-label">Confirm New Password</label><input type="password" id="s-con-pass" class="adm-form-input" placeholder="Confirm new password"></div>
+        <button class="adm-btn" onclick="changeAdminPassword()"><i class="fas fa-key"></i> Change Password</button>
+      </div>
+      <div class="adm-card">
+        <div class="adm-card-title">📱 Admin WhatsApp (for booking notifications)</div>
+        <div class="adm-form-group" style="max-width:350px">
+          <label class="adm-form-label">Admin WhatsApp Number</label>
+          <input type="text" id="s-admin-wa" class="adm-form-input" placeholder="+917467977770">
+          <p style="font-size:.77rem;color:var(--gray);margin-top:.4rem">New booking alerts will be sent to this number via WhatsApp</p>
+        </div>
+        <div class="adm-form-group" style="max-width:350px">
+          <label class="adm-form-label">Registered Mobile (for OTP recovery)</label>
+          <input type="text" id="s-admin-phone" class="adm-form-input" placeholder="+917467977770">
+          <p style="font-size:.77rem;color:var(--gray);margin-top:.4rem">OTP for password reset will be sent to this number</p>
+        </div>
+        <button class="adm-btn" onclick="saveSettings('notifications')"><i class="fas fa-save"></i> Save Notification Settings</button>
+      </div>
+    </div>
+
+  </main>
+</div><!-- #admin-dashboard -->
+
+<!-- ================================================================ MODALS -->
+
+<!-- Admin Login Modal -->
+<div class="modal-overlay" id="admin-login-modal">
+  <div class="modal" style="max-width:420px">
+    <button class="modal-close" onclick="closeModal('admin-login-modal')"><i class="fas fa-times"></i></button>
+    <div style="text-align:center;margin-bottom:1.5rem">
+      <div style="font-size:3rem;margin-bottom:.5rem">🔐</div>
+      <h2 class="modal-title" style="margin-bottom:.3rem">Admin Login</h2>
+      <p class="modal-sub" style="margin:0">Enter your credentials to access the dashboard</p>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Username</label>
+      <input type="text" id="admin-username" class="form-input" placeholder="Enter username" value="admin">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <div style="position:relative">
+        <input type="password" id="admin-password" class="form-input" placeholder="Enter password" onkeypress="if(event.key==='Enter')doAdminLogin()">
+        <button onclick="togglePassVisibility('admin-password',this)" style="position:absolute;right:1rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--gray);font-size:.9rem"><i class="fas fa-eye"></i></button>
+      </div>
+    </div>
+    <button class="submit-book-btn" onclick="doAdminLogin()">Login to Dashboard</button>
+    <div style="text-align:center;margin-top:1rem">
+      <button style="background:none;border:none;color:var(--rose-gold);font-size:.88rem;cursor:pointer;text-decoration:underline" onclick="openForgotPassword()">Forgot Password?</button>
+    </div>
+  </div>
+</div>
+
+<!-- Forgot Password / OTP Modal -->
+<div class="modal-overlay" id="forgot-pass-modal">
+  <div class="modal" style="max-width:440px">
+    <button class="modal-close" onclick="closeModal('forgot-pass-modal')"><i class="fas fa-times"></i></button>
+    <div style="text-align:center;margin-bottom:1.5rem">
+      <div style="font-size:3rem;margin-bottom:.5rem">🔑</div>
+      <h2 class="modal-title" style="margin-bottom:.3rem">Password Recovery</h2>
+    </div>
+    <!-- Step 1: Enter phone -->
+    <div id="otp-step1">
+      <p style="font-size:.88rem;color:var(--gray);margin-bottom:1.2rem">Enter your registered mobile number to receive an OTP via WhatsApp.</p>
+      <div class="form-group">
+        <label class="form-label">Registered Mobile Number</label>
+        <input type="text" id="otp-phone-input" class="form-input" placeholder="+91 XXXXXXXXXX">
+      </div>
+      <button class="submit-book-btn" onclick="sendOTP()">Send OTP via WhatsApp</button>
+    </div>
+    <!-- Step 2: Enter OTP -->
+    <div id="otp-step2" style="display:none">
+      <p style="font-size:.88rem;color:var(--gray);margin-bottom:.8rem">An OTP has been sent to your WhatsApp. Enter it below:</p>
+      <div style="background:var(--beige);border-radius:10px;padding:1rem;text-align:center;margin-bottom:1rem;border:1px dashed var(--rose-gold)">
+        <p style="font-size:.78rem;color:var(--gray);margin-bottom:.4rem">Your OTP (also sent via WhatsApp):</p>
+        <div class="otp-display" id="otp-display-code">------</div>
+        <p style="font-size:.72rem;color:var(--gray-light)">Valid for 10 minutes</p>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Enter OTP</label>
+        <input type="text" id="otp-enter-input" class="form-input" maxlength="6" placeholder="Enter 6-digit OTP" style="text-align:center;letter-spacing:.5rem;font-size:1.3rem;font-weight:700">
+      </div>
+      <button class="submit-book-btn" onclick="verifyOTP()">Verify OTP</button>
+      <div style="text-align:center;margin-top:.8rem">
+        <button style="background:none;border:none;color:var(--rose-gold);font-size:.85rem;cursor:pointer" onclick="sendOTP()">Resend OTP</button>
+      </div>
+    </div>
+    <!-- Step 3: New password -->
+    <div id="otp-step3" style="display:none">
+      <p style="font-size:.88rem;color:var(--gray);margin-bottom:1rem">OTP verified! Set your new password:</p>
+      <div class="form-group">
+        <label class="form-label">New Password</label>
+        <input type="password" id="otp-new-pass" class="form-input" placeholder="Enter new password">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confirm Password</label>
+        <input type="password" id="otp-con-pass" class="form-input" placeholder="Confirm new password">
+      </div>
+      <button class="submit-book-btn" onclick="resetPasswordOTP()">Reset Password</button>
+    </div>
+  </div>
+</div>
+
+<!-- Service Add/Edit Modal -->
+<div class="modal-overlay" id="service-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('service-modal')"><i class="fas fa-times"></i></button>
+    <h2 class="modal-title" id="service-modal-title">Add Service</h2>
+    <input type="hidden" id="s-edit-id">
+    <div class="adm-form-row">
+      <div class="adm-form-group"><label class="adm-form-label">Service Name *</label><input type="text" id="s-svc-name" class="adm-form-input" placeholder="e.g. Haircut"></div>
+      <div class="adm-form-group"><label class="adm-form-label">Category</label>
+        <select id="s-svc-cat" class="adm-form-input">
+          <option value="hair">Hair</option><option value="makeup">Makeup</option>
+          <option value="nails">Nails</option><option value="skin">Skin</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="adm-form-group"><label class="adm-form-label">Description</label><textarea id="s-svc-desc" class="adm-form-input" rows="2" style="resize:vertical" placeholder="Short description..."></textarea></div>
+    <div class="adm-form-row">
+      <div class="adm-form-group"><label class="adm-form-label">Price (₹) *</label><input type="number" id="s-svc-price" class="adm-form-input" placeholder="500"></div>
+      <div class="adm-form-group"><label class="adm-form-label">Duration (e.g. 30 min)</label><input type="text" id="s-svc-dur" class="adm-form-input" placeholder="30 min"></div>
+    </div>
+    <div class="adm-form-row">
+      <div class="adm-form-group"><label class="adm-form-label">Icon (emoji)</label><input type="text" id="s-svc-icon" class="adm-form-input" placeholder="✂️" maxlength="4"></div>
+      <div class="adm-form-group"><label class="adm-form-label"></label><button class="adm-btn" style="margin-top:1.4rem;width:100%" onclick="saveService()"><i class="fas fa-save"></i> Save Service</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- Stylist Add/Edit Modal -->
+<div class="modal-overlay" id="stylist-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('stylist-modal')"><i class="fas fa-times"></i></button>
+    <h2 class="modal-title" id="stylist-modal-title">Add Stylist</h2>
+    <input type="hidden" id="st-edit-id">
+    <div class="adm-form-row">
+      <div class="adm-form-group"><label class="adm-form-label">Full Name *</label><input type="text" id="st-name" class="adm-form-input" placeholder="e.g. Priya Sharma"></div>
+      <div class="adm-form-group"><label class="adm-form-label">Specialization</label><input type="text" id="st-spec" class="adm-form-input" placeholder="e.g. Senior Stylist"></div>
+    </div>
+    <div class="adm-form-row">
+      <div class="adm-form-group"><label class="adm-form-label">Experience</label><input type="text" id="st-exp" class="adm-form-input" placeholder="e.g. 5 years"></div>
+      <div class="adm-form-group"><label class="adm-form-label">Status</label>
+        <select id="st-status" class="adm-form-input">
+          <option value="available">Available</option>
+          <option value="busy">Busy</option>
+        </select>
+      </div>
+    </div>
+    <div class="adm-form-group"><label class="adm-form-label">Photo URL</label><input type="url" id="st-img" class="adm-form-input" placeholder="https://example.com/photo.jpg"></div>
+    <div class="adm-form-group"><label class="adm-form-label">Bio / Description</label><textarea id="st-bio" class="adm-form-input" rows="2" style="resize:vertical" placeholder="Short bio..."></textarea></div>
+    <button class="adm-btn" onclick="saveStylist()"><i class="fas fa-save"></i> Save Stylist</button>
+  </div>
+</div>
+
+<!-- Gallery Add Modal -->
+<div class="modal-overlay" id="gallery-modal">
+  <div class="modal" style="max-width:440px">
+    <button class="modal-close" onclick="closeModal('gallery-modal')"><i class="fas fa-times"></i></button>
+    <h2 class="modal-title">Add Gallery Image</h2>
+    <div class="adm-form-group"><label class="adm-form-label">Image URL *</label><input type="url" id="g-img-url" class="adm-form-input" placeholder="https://example.com/image.jpg" oninput="previewGalleryImg()"></div>
+    <div id="g-img-preview" style="display:none;margin-bottom:1rem"><img id="g-preview-img" src="" style="width:100%;max-height:200px;object-fit:cover;border-radius:10px"></div>
+    <div class="adm-form-row">
+      <div class="adm-form-group"><label class="adm-form-label">Title</label><input type="text" id="g-img-title" class="adm-form-input" placeholder="e.g. Bridal Look"></div>
+      <div class="adm-form-group"><label class="adm-form-label">Category</label>
+        <select id="g-img-cat" class="adm-form-input">
+          <option value="hair">Hair</option><option value="makeup">Makeup</option>
+          <option value="nails">Nails</option><option value="skin">Skin</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+    </div>
+    <button class="adm-btn" onclick="saveGalleryImage()"><i class="fas fa-save"></i> Add Image</button>
+  </div>
+</div>
+
+<!-- Banner Add Modal -->
+<div class="modal-overlay" id="banner-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('banner-modal')"><i class="fas fa-times"></i></button>
+    <h2 class="modal-title" id="banner-modal-title">Add Promotional Banner</h2>
+    <input type="hidden" id="b-edit-id">
+    <div class="adm-form-row">
+      <div class="adm-form-group"><label class="adm-form-label">Title *</label><input type="text" id="b-title" class="adm-form-input" placeholder="e.g. Summer Special"></div>
+      <div class="adm-form-group"><label class="adm-form-label">Tag / Badge</label><input type="text" id="b-tag" class="adm-form-input" placeholder="e.g. LIMITED OFFER"></div>
+    </div>
+    <div class="adm-form-group"><label class="adm-form-label">Subtitle / Description</label><input type="text" id="b-sub" class="adm-form-input" placeholder="e.g. 30% off on all hair services"></div>
+    <div class="adm-form-row">
+      <div class="adm-form-group"><label class="adm-form-label">CTA Button Text</label><input type="text" id="b-cta" class="adm-form-input" placeholder="Book Now"></div>
+      <div class="adm-form-group"><label class="adm-form-label">Background Image URL</label><input type="url" id="b-img" class="adm-form-input" placeholder="https://..."></div>
+    </div>
+    <button class="adm-btn" onclick="saveBanner()"><i class="fas fa-save"></i> Save Banner</button>
+  </div>
+</div>
+
+<!-- UPI Payment Modal -->
+<div class="modal-overlay" id="upi-modal">
+  <div class="modal" style="max-width:420px;text-align:center">
+    <button class="modal-close" onclick="closeModal('upi-modal')"><i class="fas fa-times"></i></button>
+    <h2 class="modal-title">Pay via UPI</h2>
+    <div class="upi-display">
+      <p style="font-size:.85rem;color:var(--gray)">Pay to UPI ID:</p>
+      <div class="upi-id-box" id="upi-display-id">8054307107@ptsbi</div>
+      <div class="upi-amount" id="upi-display-amount">₹0</div>
+      <p style="font-size:.8rem;color:var(--gray)">Pay to: <span id="upi-display-name" style="font-weight:600">Daffodil Beauty Salon</span></p>
+    </div>
+    <p style="font-size:.85rem;color:var(--gray);margin-bottom:.8rem">Open with any UPI app:</p>
+    <div class="upi-apps">
+      <button class="upi-app-btn" onclick="openUpiApp('gpay')">📱 GPay</button>
+      <button class="upi-app-btn" onclick="openUpiApp('phonepe')">💜 PhonePe</button>
+      <button class="upi-app-btn" onclick="openUpiApp('paytm')">🔵 Paytm</button>
+      <button class="upi-app-btn" onclick="openUpiApp('bhim')">🇮🇳 BHIM</button>
+    </div>
+    <div style="margin-top:1rem;padding:.8rem;background:var(--beige);border-radius:8px;font-size:.8rem;color:var(--gray)">
+      <i class="fas fa-info-circle"></i> After payment, click "Confirm Payment" below
+    </div>
+    <button class="submit-book-btn" style="margin-top:1rem" onclick="confirmUpiPayment()">✅ I've Completed Payment</button>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div id="lightbox">
+  <button class="lb-close" onclick="closeLightbox()"><i class="fas fa-times"></i></button>
+  <img id="lb-img" src="" alt="Gallery">
+</div>
+
+<!-- Toast Container -->
+<div id="toast-wrap"></div>
+
+<!-- Scroll To Top -->
+<button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})"><i class="fas fa-chevron-up"></i></button>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+/* ================================================================
+   DAFFODIL BEAUTY SALON — JAVASCRIPT ENGINE
+   All data stored in LocalStorage
+================================================================ */
+
+// ── DEFAULT DATA ──────────────────────────────────────────────
+const DEFAULT_SETTINGS = {
+  name: 'Daffodil',
+  tagline: 'Beauty, Care & Confidence',
+  address: '12, Rose Avenue, Green Park, New Delhi - 110016',
+  phone: '+91 7467977770',
+  email: 'daffodilsalon@gmail.com',
+  hours: 'Mon–Sat: 10:00 AM – 8:00 PM',
+  hoursSun: 'Sunday: 11:00 AM – 6:00 PM',
+  instagram: '',
+  facebook: '',
+  whatsapp: 'https://wa.me/917467977770',
+  youtube: '',
+  mapsLink: '',
+  adminWhatsapp: '+917467977770',
+  adminPhone: '+917467977770',
+  upiId: '8054307107@ptsbi',
+  upiName: 'Daffodil Beauty Salon',
+  razorpayKey: '',
+  accountName: 'Daffodil Beauty Salon',
+  onlinePayEnabled: true,
+  adminUser: 'admin',
+  adminPass: 'admin123',
+  blockedDates: [],
+  blockedSlotsByDate: {},
+  globalBlockedSlots: []
+};
+
+const DEFAULT_SERVICES = [
+  {id:'s1', name:'Haircut', desc:'Precision cut tailored to your face shape and style', price:500, duration:'30 min', icon:'✂️', category:'hair'},
+  {id:'s2', name:'Hair Styling', desc:'Professional styling for parties, events or everyday glam', price:800, duration:'45 min', icon:'💇', category:'hair'},
+  {id:'s3', name:'Hair Spa', desc:'Deep conditioning and nourishment treatment for healthy hair', price:1200, duration:'60 min', icon:'🧖', category:'hair'},
+  {id:'s4', name:'Facial', desc:'Rejuvenating facial treatment for glowing, radiant skin', price:1000, duration:'60 min', icon:'✨', category:'skin'},
+  {id:'s5', name:'Manicure', desc:'Complete nail care including shaping, buffing and polish', price:600, duration:'45 min', icon:'💅', category:'nails'},
+  {id:'s6', name:'Pedicure', desc:'Relaxing foot care treatment with massage and nail care', price:700, duration:'45 min', icon:'🦶', category:'nails'},
+  {id:'s7', name:'Waxing', desc:'Smooth, gentle hair removal with premium quality wax', price:400, duration:'30 min', icon:'🌿', category:'skin'},
+  {id:'s8', name:'Threading', desc:'Precise eyebrow and face threading by expert hands', price:150, duration:'15 min', icon:'🧵', category:'skin'},
+  {id:'s9', name:'Bridal Makeup', desc:'Complete bridal look with premium products and airbrush finish', price:8000, duration:'3 hrs', icon:'👰', category:'makeup'},
+  {id:'s10', name:'Skin Treatment', desc:'Advanced skin care therapy customized for your skin type', price:1500, duration:'90 min', icon:'🫧', category:'skin'}
+];
+
+const DEFAULT_GALLERY = [
+  {id:'g1', url:'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&q=80', title:'Elegant Haircut', category:'hair'},
+  {id:'g2', url:'https://images.unsplash.com/photo-1487412912498-0447578fcca8?w=600&q=80', title:'Bridal Makeup', category:'makeup'},
+  {id:'g3', url:'https://images.unsplash.com/photo-1519014816548-bf5fe059798b?w=600&q=80', title:'Nail Art', category:'nails'},
+  {id:'g4', url:'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=600&q=80', title:'Facial Treatment', category:'skin'},
+  {id:'g5', url:'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=600&q=80', title:'Salon Ambience', category:'hair'},
+  {id:'g6', url:'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=600&q=80', title:'Hair Styling', category:'hair'},
+  {id:'g7', url:'https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?w=600&q=80', title:'Manicure', category:'nails'},
+  {id:'g8', url:'https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=600&q=80', title:'Makeup Art', category:'makeup'},
+  {id:'g9', url:'https://images.unsplash.com/photo-1562322140-8baeececf3df?w=600&q=80', title:'Hair Color', category:'hair'}
+];
+
+const DEFAULT_BANNERS = [
+  {id:'b1', tag:'SPECIAL OFFER', title:'Bridal Season Special', sub:'Complete Bridal Package at 20% off', cta:'Book Now', img:'https://images.unsplash.com/photo-1487412912498-0447578fcca8?w=1200&q=80'},
+  {id:'b2', tag:'FESTIVE DEAL', title:'Festival Beauty Package', sub:'Haircut + Facial + Manicure at ₹1,999', cta:'Avail Offer', img:'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=1200&q=80'},
+  {id:'b3', tag:'NEW SERVICE', title:'Advanced Skin Treatment', sub:'Pamper your skin with our new therapies', cta:'Learn More', img:'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=1200&q=80'},
+  {id:'b4', tag:'LOYALTY OFFER', title:'Referral Discount', sub:'Refer a friend and both get 15% off', cta:'Share Now', img:'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1200&q=80'}
+];
+
+const DEFAULT_STYLISTS = [
+  {id:'st1', name:'Priya Sharma', spec:'Senior Stylist', exp:'8 years experience', status:'available', img:'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=400&q=80', bio:'Expert in all hair types and styling techniques'},
+  {id:'st2', name:'Meera Patel', spec:'Makeup Artist', exp:'6 years experience', status:'available', img:'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&q=80', bio:'Bridal and party makeup specialist'},
+  {id:'st3', name:'Anjali Singh', spec:'Nail Technician', exp:'4 years experience', status:'available', img:'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&q=80', bio:'Creative nail art and classic manicure expert'},
+  {id:'st4', name:'Kavita Nair', spec:'Skincare Specialist', exp:'7 years experience', status:'available', img:'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&q=80', bio:'Advanced skin treatments and anti-aging specialist'}
+];
+
+const ALL_SLOTS = ['10:00 AM','11:00 AM','12:00 PM','1:00 PM','2:00 PM','3:00 PM','4:00 PM','5:00 PM','6:00 PM','7:00 PM','8:00 PM'];
+
+// ── LOCAL STORAGE HELPERS ─────────────────────────────────────
+function ls(key) { try { return JSON.parse(localStorage.getItem('daf_'+key)); } catch(e) { return null; } }
+function lsSet(key, val) { localStorage.setItem('daf_'+key, JSON.stringify(val)); }
+function lsInit(key, def) { if(ls(key) === null) lsSet(key, def); }
+
+function initData() {
+  lsInit('settings', DEFAULT_SETTINGS);
+  lsInit('services', DEFAULT_SERVICES);
+  lsInit('gallery', DEFAULT_GALLERY);
+  lsInit('banners', DEFAULT_BANNERS);
+  lsInit('stylists', DEFAULT_STYLISTS);
+  lsInit('bookings', []);
+}
+
+function getSettings() { return {...DEFAULT_SETTINGS, ...ls('settings')}; }
+function getServices() { return ls('services') || DEFAULT_SERVICES; }
+function getGallery() { return ls('gallery') || DEFAULT_GALLERY; }
+function getBanners() { return ls('banners') || DEFAULT_BANNERS; }
+function getStylists() { return ls('stylists') || DEFAULT_STYLISTS; }
+function getBookings() { return ls('bookings') || []; }
+
+// ── CURRENT BOOKING STATE ─────────────────────────────────────
+let selectedServices = [];
+let bookingStep = 1;
+let selectedSlot = '';
+let paymentMethod = 'salon';
+let onlineMethod = 'upi';
+let currentBooking = null;
+let bannerIdx = 0;
+let bannerTimer = null;
+let currentOTP = '';
+let otpPhone = '';
+
+// ── INIT ──────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  initData();
+  setTimeout(() => {
+    document.getElementById('loading-screen').classList.add('hidden');
+    initApp();
+  }, 2200);
+});
+
+function initApp() {
+  updateNavSalonName();
+  createParticles();
+  renderServices();
+  renderBanners();
+  renderStylists();
+  renderGallery('all');
+  updateContactSection();
+  updateFooter();
+  updateBookingSummary();
+  setMinBookingDate();
+  initNavScroll();
+  initScrollTop();
+  document.getElementById('f-year').textContent = new Date().getFullYear();
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────
+function updateNavSalonName() {
+  const s = getSettings();
+  document.getElementById('nav-salon-name').textContent = s.name || 'Daffodil';
+  document.getElementById('page-title').textContent = (s.name||'Daffodil') + ' Beauty Salon';
+  document.getElementById('load-name').textContent = s.name || 'Daffodil';
+  document.getElementById('hero-title-name').textContent = s.name || 'Daffodil';
+}
+
+function goHome() {
+  if(document.getElementById('admin-dashboard').classList.contains('visible')) {
+    adminLogout(); return;
+  }
+  window.scrollTo({top:0, behavior:'smooth'});
+  closeAllModals();
+}
+
+function toggleMobileMenu() {
+  const menu = document.getElementById('nav-links');
+  const ham = document.getElementById('hamburger');
+  menu.classList.toggle('open');
+  ham.classList.toggle('open');
+}
+
+function initNavScroll() {
+  const nav = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+    document.getElementById('scroll-top').classList.toggle('visible', window.scrollY > 400);
+  });
+  // Close mobile menu on nav link click
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    a.addEventListener('click', () => {
+      document.getElementById('nav-links').classList.remove('open');
+      document.getElementById('hamburger').classList.remove('open');
+    });
+  });
+}
+
+function initScrollTop() {
+  // already handled in initNavScroll
+}
+
+// ── HERO PARTICLES ────────────────────────────────────────────
+function createParticles() {
+  const wrap = document.getElementById('hero-particles');
+  if(!wrap) return;
+  for(let i=0;i<18;i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = Math.random()*8+3;
+    p.style.cssText = `
+      width:${size}px;height:${size}px;left:${Math.random()*100}%;
+      animation-duration:${Math.random()*12+8}s;
+      animation-delay:${Math.random()*10}s;
+      background:${Math.random()>.5?'rgba(232,197,206,.6)':'rgba(212,168,83,.5)'};
+    `;
+    wrap.appendChild(p);
+  }
+}
+
+// ── BANNER SLIDER ─────────────────────────────────────────────
+function renderBanners() {
+  const banners = getBanners();
+  const container = document.getElementById('banner-slides-container');
+  const dotsWrap = document.getElementById('b-dots');
+  if(!container||!dotsWrap) return;
+  container.innerHTML = '';
+  dotsWrap.innerHTML = '';
+  if(!banners.length) {
+    container.innerHTML = '<div class="banner-slide active"><div class="banner-body"><h2 class="banner-title">Welcome to ' + (getSettings().name||'Daffodil') + '</h2><p class="banner-sub">Book your appointment today</p><button class="banner-btn" onclick="scrollToBooking()">Book Now</button></div></div>';
+    return;
+  }
+  banners.forEach((b,i) => {
+    const slide = document.createElement('div');
+    slide.className = 'banner-slide' + (i===0?' active':'');
+    slide.innerHTML = `
+      <div class="banner-bg" style="background-image:url('${b.img||''}')"></div>
+      <div class="banner-body">
+        ${b.tag?`<div class="banner-tag">${b.tag}</div>`:''}
+        <h2 class="banner-title">${b.title||''}</h2>
+        <p class="banner-sub">${b.sub||''}</p>
+        <button class="banner-btn" onclick="scrollToBooking()">${b.cta||'Book Now'}</button>
+      </div>`;
+    container.appendChild(slide);
+    const dot = document.createElement('div');
+    dot.className = 'b-dot' + (i===0?' active':'');
+    dot.onclick = () => setBanner(i);
+    dotsWrap.appendChild(dot);
+  });
+  startBannerAuto();
+}
+
+function setBanner(idx) {
+  const slides = document.querySelectorAll('.banner-slide');
+  const dots = document.querySelectorAll('.b-dot');
+  if(!slides.length) return;
+  bannerIdx = (idx+slides.length) % slides.length;
+  slides.forEach((s,i) => s.classList.toggle('active', i===bannerIdx));
+  dots.forEach((d,i) => d.classList.toggle('active', i===bannerIdx));
+}
+
+function moveBanner(dir) {
+  setBanner(bannerIdx+dir);
+  resetBannerAuto();
+}
+
+function startBannerAuto() {
+  clearInterval(bannerTimer);
+  bannerTimer = setInterval(() => setBanner(bannerIdx+1), 5000);
+}
+
+function resetBannerAuto() {
+  clearInterval(bannerTimer);
+  startBannerAuto();
+}
+
+// ── SERVICES ──────────────────────────────────────────────────
+function renderServices() {
+  const services = getServices();
+  const grid = document.getElementById('services-grid');
+  if(!grid) return;
+  grid.innerHTML = services.map(s => `
+    <div class="svc-card ${selectedServices.find(x=>x.id===s.id)?'selected':''}" 
+         id="svc-${s.id}" onclick="toggleService('${s.id}')">
+      <div class="svc-check">${selectedServices.find(x=>x.id===s.id)?'<i class="fas fa-check"></i>':''}</div>
+      <div class="svc-icon">${s.icon||'💄'}</div>
+      <div class="svc-name">${s.name}</div>
+      <div class="svc-desc">${s.desc||''}</div>
+      <div class="svc-meta">
+        <div class="svc-price">₹${Number(s.price).toLocaleString('en-IN')}</div>
+        <div class="svc-dur">${s.duration||'—'}</div>
+      </div>
+    </div>`).join('');
+  updateSelectedBar();
+}
+
+function toggleService(id) {
+  const services = getServices();
+  const svc = services.find(s => s.id===id);
+  if(!svc) return;
+  const idx = selectedServices.findIndex(s => s.id===id);
+  if(idx>-1) selectedServices.splice(idx,1); else selectedServices.push(svc);
+  renderServices();
+  updateBookingSummary();
+}
+
+function updateSelectedBar() {
+  const bar = document.getElementById('selected-bar');
+  const count = document.getElementById('sel-count');
+  const names = document.getElementById('sel-names');
+  const total = document.getElementById('sel-total');
+  if(selectedServices.length>0) {
+    bar.classList.add('visible');
+    count.textContent = selectedServices.length + ' service' + (selectedServices.length>1?'s':'');
+    const sum = selectedServices.reduce((a,s)=>a+Number(s.price),0);
+    total.textContent = '₹' + sum.toLocaleString('en-IN');
+    const nms = selectedServices.map(s=>s.name).join(', ');
+    names.textContent = nms.length>50 ? nms.slice(0,47)+'…' : nms;
+  } else {
+    bar.classList.remove('visible');
+  }
+}
+
+// ── BOOKING SYSTEM ────────────────────────────────────────────
+function setMinBookingDate() {
+  const inp = document.getElementById('b-date');
+  if(!inp) return;
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth()+1).padStart(2,'0');
+  const dd = String(today.getDate()).padStart(2,'0');
+  const todayStr = `${yyyy}-${mm}-${dd}`;
+  inp.min = todayStr;
+  inp.value = todayStr;
+  loadSlots();
+}
+
+function scrollToBooking() {
+  document.getElementById('booking').scrollIntoView({behavior:'smooth'});
+  document.getElementById('nav-links').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+}
+
+function updateBookingSummary() {
+  const sumSvcList = document.getElementById('summ-services-list');
+  const sumTotal = document.getElementById('summ-total');
+  const bookDisplay = document.getElementById('booking-services-display');
+  
+  if(!selectedServices.length) {
+    sumSvcList.innerHTML = '<p style="opacity:.65;font-size:.88rem">No services selected yet</p>';
+    sumTotal.textContent = '₹0';
+    if(bookDisplay) bookDisplay.innerHTML = 'No services selected. <a href="#services" style="color:var(--rose-light);font-weight:600" onclick="event.preventDefault();document.getElementById(\'services\').scrollIntoView({behavior:\'smooth\'})">← Choose from Services section</a>';
+    return;
+  }
+  const total = selectedServices.reduce((a,s)=>a+Number(s.price),0);
+  sumSvcList.innerHTML = selectedServices.map(s=>`
+    <div class="summ-row">
+      <span>${s.icon||''} ${s.name}</span>
+      <span>₹${Number(s.price).toLocaleString('en-IN')}</span>
+    </div>`).join('');
+  sumTotal.textContent = '₹' + total.toLocaleString('en-IN');
+  if(bookDisplay) {
+    bookDisplay.innerHTML = '<div style="display:flex;flex-wrap:wrap;gap:.4rem">' +
+      selectedServices.map(s=>`<span style="background:var(--beige);padding:.25rem .7rem;border-radius:20px;font-size:.82rem;color:var(--maroon);font-weight:600">${s.icon||''} ${s.name}</span>`).join('') +
+      `</div><div style="margin-top:.7rem;font-weight:700;color:var(--maroon);font-size:.95rem">Total: ₹${total.toLocaleString('en-IN')}</div>`;
+  }
+}
+
+function bookingNextStep(step) {
+  // Validate current step
+  if(step===2) {
+    if(!document.getElementById('b-name').value.trim()) { toast('Please enter your name','error'); return; }
+    if(!document.getElementById('b-phone').value.trim()) { toast('Please enter your phone number','error'); return; }
+    const ph = document.getElementById('b-phone').value.trim();
+    if(!/^\+?[\d\s\-]{8,15}$/.test(ph)) { toast('Please enter a valid phone number','error'); return; }
+  }
+  if(step===3) {
+    if(!document.getElementById('b-date').value) { toast('Please select a date','error'); return; }
+    if(!selectedSlot) { toast('Please select a time slot','error'); return; }
+    document.getElementById('summ-date').textContent = formatDate(document.getElementById('b-date').value);
+    document.getElementById('summ-time').textContent = selectedSlot;
+  }
+  bookingStep = step;
+  ['booking-step1','booking-step2','booking-step3'].forEach((id,i)=>{
+    document.getElementById(id).style.display = (i+1===step)?'block':'none';
+  });
+  // Update step indicators
+  for(let i=1;i<=3;i++) {
+    const el = document.getElementById('step'+i);
+    if(el) {
+      el.classList.remove('active','done');
+      if(i<step) el.classList.add('done');
+      else if(i===step) el.classList.add('active');
+    }
+  }
+  window.scrollTo({top:document.getElementById('booking').offsetTop-100,behavior:'smooth'});
+}
+
+function loadSlots() {
+  const dateInput = document.getElementById('b-date');
+  if(!dateInput) return;
+  const date = dateInput.value;
+  document.getElementById('summ-date').textContent = date ? formatDate(date) : '—';
+  const settings = getSettings();
+  const bookings = getBookings();
+  const grid = document.getElementById('slots-grid');
+  if(!grid) return;
+  selectedSlot = '';
+  document.getElementById('summ-time').textContent = '—';
+  
+  const blockedDates = settings.blockedDates || [];
+  const isFullyBlocked = blockedDates.includes(date);
+  const blockedSlotsByDate = settings.blockedSlotsByDate || {};
+  const dateSlotsBlocked = blockedSlotsByDate[date] || [];
+  const globalBlocked = settings.globalBlockedSlots || [];
+  
+  const bookedSlotsToday = bookings
+    .filter(b => b.date===date && b.status!=='cancelled')
+    .map(b => b.time);
+
+  grid.innerHTML = ALL_SLOTS.map(slot => {
+    let cls = 'slot-btn';
+    let title = '';
+    if(isFullyBlocked) { cls += ' blocked'; title = 'Date blocked'; }
+    else if(globalBlocked.includes(slot)) { cls += ' blocked'; title = 'Slot blocked'; }
+    else if(dateSlotsBlocked.includes(slot)) { cls += ' blocked'; title = 'Slot blocked for this date'; }
+    else if(bookedSlotsToday.includes(slot)) { cls += ' booked'; title = 'Already booked'; }
+    return `<button class="${cls}" title="${title}" onclick="selectSlot(this,'${slot}')" ${cls.includes('booked')||cls.includes('blocked')?'disabled':''}>${slot}${cls.includes('booked')?'<br><small>Booked</small>':cls.includes('blocked')?'<br><small>Blocked</small>':''}</button>`;
+  }).join('');
+}
+
+function selectSlot(btn, slot) {
+  if(btn.classList.contains('booked')||btn.classList.contains('blocked')) return;
+  document.querySelectorAll('.slot-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedSlot = slot;
+  document.getElementById('summ-time').textContent = slot;
+}
+
+function selectPayment(type) {
+  paymentMethod = type;
+  document.getElementById('pay-salon').classList.toggle('active', type==='salon');
+  document.getElementById('pay-online').classList.toggle('active', type==='online');
+  const onlineMethods = document.getElementById('online-methods');
+  onlineMethods.classList.toggle('show', type==='online');
+  document.getElementById('summ-payment').textContent = type==='salon' ? 'Pay at Salon' : 'Pay Online';
+  const confirmBtn = document.getElementById('confirm-book-btn');
+  if(type==='online') {
+    confirmBtn.textContent = '💳 Proceed to Pay';
+  } else {
+    confirmBtn.textContent = '✅ Confirm Appointment';
+  }
+}
+
+function selectOnlineMethod(method) {
+  onlineMethod = method;
+  ['opm-upi','opm-razorpay','opm-wallet'].forEach(id=>{
+    document.getElementById(id).classList.toggle('active', id==='opm-'+method);
+  });
+  const labels = {upi:'Pay via UPI',razorpay:'Pay via Card/Net Banking',wallet:'Pay via Wallet'};
+  document.getElementById('summ-payment').textContent = labels[method]||'Online';
+}
+
+function confirmBooking() {
+  const name = document.getElementById('b-name').value.trim();
+  const phone = document.getElementById('b-phone').value.trim();
+  const email = document.getElementById('b-email').value.trim();
+  const date = document.getElementById('b-date').value;
+  
+  if(!name||!phone||!date||!selectedSlot) {
+    toast('Please fill in all required fields','error'); return;
+  }
+  if(!selectedServices.length) {
+    toast('Please select at least one service','error');
+    document.getElementById('services').scrollIntoView({behavior:'smooth'}); return;
+  }
+  const total = selectedServices.reduce((a,s)=>a+Number(s.price),0);
+  
+  currentBooking = {
+    id: 'DFF-' + Date.now().toString().slice(-6),
+    customerName: name, phone, email,
+    services: selectedServices.map(s=>s.name),
+    serviceIds: selectedServices.map(s=>s.id),
+    date, time: selectedSlot,
+    totalPrice: total,
+    paymentMethod: paymentMethod==='salon'?'Pay at Salon':(onlineMethod==='upi'?'UPI':'Razorpay/Card'),
+    paymentStatus: paymentMethod==='salon'?'pending':'pending',
+    status: 'confirmed',
+    createdAt: new Date().toISOString()
+  };
+  
+  if(paymentMethod==='online') {
+    const settings = getSettings();
+    if(!settings.onlinePayEnabled) {
+      toast('Online payment is currently unavailable. Booking as Pay at Salon.','warning');
+      currentBooking.paymentMethod = 'Pay at Salon';
+      saveAndConfirmBooking();
+      return;
+    }
+    if(onlineMethod==='razorpay') {
+      processRazorpay(total, currentBooking);
+    } else if(onlineMethod==='upi') {
+      openUPIPayment(total);
+    } else {
+      openUPIPayment(total); // wallet also uses UPI for now
+    }
+  } else {
+    saveAndConfirmBooking();
+  }
+}
+
+function processRazorpay(amount, booking) {
+  const settings = getSettings();
+  const key = settings.razorpayKey || '';
+  if(!key || key.length < 10) {
+    toast('Razorpay not configured. Please select UPI or Pay at Salon.','warning');
+    return;
+  }
+  try {
+    const options = {
+      key: key,
+      amount: amount * 100,
+      currency: 'INR',
+      name: settings.name || 'Daffodil Beauty Salon',
+      description: 'Appointment: ' + booking.services.join(', '),
+      handler: function(response) {
+        currentBooking.paymentId = response.razorpay_payment_id;
+        currentBooking.paymentStatus = 'paid';
+        saveAndConfirmBooking();
+      },
+      prefill: { name: booking.customerName, email: booking.email, contact: booking.phone },
+      notes: { booking_id: booking.id, date: booking.date, time: booking.time },
+      theme: { color: '#7B1E3A' },
+      modal: {
+        ondismiss: function() { toast('Payment cancelled. Choose Pay at Salon or try again.','info'); }
+      }
+    };
+    const rzp = new Razorpay(options);
+    rzp.open();
+  } catch(e) {
+    toast('Razorpay error. Try UPI or Pay at Salon.','error');
+    console.error(e);
+  }
+}
+
+function openUPIPayment(amount) {
+  const settings = getSettings();
+  document.getElementById('upi-display-id').textContent = settings.upiId || '8054307107@ptsbi';
+  document.getElementById('upi-display-name').textContent = settings.upiName || settings.name || 'Daffodil Beauty Salon';
+  document.getElementById('upi-display-amount').textContent = '₹' + amount.toLocaleString('en-IN');
+  openModal('upi-modal');
+}
+
+function openUpiApp(app) {
+  const settings = getSettings();
+  const upiId = settings.upiId || '8054307107@ptsbi';
+  const upiName = encodeURIComponent(settings.upiName || settings.name || 'Daffodil Beauty Salon');
+  const amount = selectedServices.reduce((a,s)=>a+Number(s.price),0);
+  const tn = encodeURIComponent('Appointment at ' + (settings.name||'Daffodil Beauty Salon'));
+  const upiLink = `upi://pay?pa=${upiId}&pn=${upiName}&am=${amount}&cu=INR&tn=${tn}`;
+  window.location.href = upiLink;
+  setTimeout(()=>toast('If no app opened, copy UPI ID: ' + upiId,'info'), 1500);
+}
+
+function confirmUpiPayment() {
+  closeModal('upi-modal');
+  currentBooking.paymentStatus = 'paid';
+  currentBooking.paymentMethod = 'UPI';
+  saveAndConfirmBooking();
+}
+
+function saveAndConfirmBooking() {
+  if(!currentBooking) return;
+  const bookings = getBookings();
+  bookings.unshift(currentBooking);
+  lsSet('bookings', bookings);
+  showConfirmationScreen(currentBooking);
+  // Notify admin via WhatsApp automatically
+  setTimeout(() => notifyAdminWhatsapp(currentBooking), 800);
+  toast('Booking confirmed! 🎉','success');
+  // Update admin badge if admin is open
+  updateAdminBadge();
+}
+
+function showConfirmationScreen(booking) {
+  document.getElementById('booking').style.display = 'none';
+  const conf = document.getElementById('confirmation');
+  conf.style.display = 'block';
+  conf.scrollIntoView({behavior:'smooth'});
+  document.getElementById('confirm-booking-id').textContent = 'Booking ID: #' + booking.id;
+  const details = document.getElementById('confirm-details');
+  details.innerHTML = `
+    <div class="cd-row"><span>👤 Name</span><span>${booking.customerName}</span></div>
+    <div class="cd-row"><span>📞 Phone</span><span>${booking.phone}</span></div>
+    ${booking.email?`<div class="cd-row"><span>📧 Email</span><span>${booking.email}</span></div>`:''}
+    <div class="cd-row"><span>💄 Services</span><span>${booking.services.join(', ')}</span></div>
+    <div class="cd-row"><span>📅 Date</span><span>${formatDate(booking.date)}</span></div>
+    <div class="cd-row"><span>⏰ Time</span><span>${booking.time}</span></div>
+    <div class="cd-row"><span>💳 Payment</span><span>${booking.paymentMethod} ${booking.paymentStatus==='paid'?'✅ Paid':''}</span></div>
+    <div class="cd-row"><span>💰 Total Amount</span><span>₹${Number(booking.totalPrice).toLocaleString('en-IN')}</span></div>
+  `;
+}
+
+function resetBooking() {
+  selectedServices = [];
+  selectedSlot = '';
+  bookingStep = 1;
+  paymentMethod = 'salon';
+  currentBooking = null;
+  document.getElementById('b-name').value = '';
+  document.getElementById('b-phone').value = '';
+  document.getElementById('b-email').value = '';
+  setMinBookingDate();
+  document.getElementById('confirmation').style.display = 'none';
+  document.getElementById('booking').style.display = 'block';
+  document.getElementById('booking-step1').style.display = 'block';
+  document.getElementById('booking-step2').style.display = 'none';
+  document.getElementById('booking-step3').style.display = 'none';
+  bookingNextStep(1);
+  renderServices();
+  updateBookingSummary();
+  document.getElementById('services').scrollIntoView({behavior:'smooth'});
+}
+
+// ── WHATSAPP INTEGRATION ──────────────────────────────────────
+function sendWhatsAppConfirmation() {
+  if(!currentBooking) return;
+  const settings = getSettings();
+  const msg = `Hello, my appointment at ${settings.name||'Daffodil Beauty Salon'} is confirmed! 🌼\n\n` +
+    `📋 *Booking Details*\n` +
+    `━━━━━━━━━━━━━━━━━━━━\n` +
+    `👤 Name: ${currentBooking.customerName}\n` +
+    `💆 Services: ${currentBooking.services.join(', ')}\n` +
+    `📅 Date: ${formatDate(currentBooking.date)}\n` +
+    `⏰ Time: ${currentBooking.time}\n` +
+    `💰 Total: ₹${Number(currentBooking.totalPrice).toLocaleString('en-IN')}\n` +
+    `💳 Payment: ${currentBooking.paymentMethod}\n` +
+    `🆔 Booking ID: #${currentBooking.id}\n` +
+    `━━━━━━━━━━━━━━━━━━━━\n` +
+    `See you soon! 😊`;
+  const salonWa = (settings.adminWhatsapp||'+917467977770').replace(/\D/g,'');
+  window.open(`https://wa.me/${salonWa}?text=${encodeURIComponent(msg)}`, '_blank');
+  toast('Opening WhatsApp...','success');
+}
+
+function notifyAdminWhatsapp(booking) {
+  const settings = getSettings();
+  const adminWa = (settings.adminWhatsapp||'917467977770').replace(/\D/g,'');
+  const msg = `🔔 *NEW BOOKING ALERT — ${settings.name||'Daffodil'}*\n\n` +
+    `👤 Customer: ${booking.customerName}\n` +
+    `📞 Phone: ${booking.phone}\n` +
+    `${booking.email?`📧 Email: ${booking.email}\n`:'' }` +
+    `💄 Services: ${booking.services.join(', ')}\n` +
+    `📅 Date: ${formatDate(booking.date)}\n` +
+    `⏰ Time: ${booking.time}\n` +
+    `💰 Total: ₹${Number(booking.totalPrice).toLocaleString('en-IN')}\n` +
+    `💳 Payment: ${booking.paymentMethod} (${booking.paymentStatus})\n` +
+    `🆔 Booking ID: #${booking.id}\n` +
+    `🕐 Booked at: ${new Date(booking.createdAt).toLocaleString('en-IN')}`;
+  const url = `https://wa.me/${adminWa}?text=${encodeURIComponent(msg)}`;
+  // Open in background
+  const a = document.createElement('a');
+  a.href = url; a.target = '_blank'; a.rel = 'noopener';
+  a.click();
+  toast('Booking alert sent to admin via WhatsApp!','info');
+}
+
+// ── GOOGLE CALENDAR ───────────────────────────────────────────
+function addToCalendar() {
+  if(!currentBooking) return;
+  const settings = getSettings();
+  const [y,m,d] = currentBooking.date.split('-');
+  const timeStr = currentBooking.time;
+  const hour24 = convertTo24(timeStr);
+  const startDT = `${y}${m}${d}T${hour24}00`;
+  const endHour = (parseInt(hour24.slice(0,2)) + 1).toString().padStart(2,'0');
+  const endDT = `${y}${m}${d}T${endHour}${hour24.slice(2)}00`;
+  const title = encodeURIComponent(`Appointment at ${settings.name||'Daffodil Beauty Salon'}`);
+  const details = encodeURIComponent(`Services: ${currentBooking.services.join(', ')}\nTotal: ₹${currentBooking.totalPrice}\nBooking ID: #${currentBooking.id}`);
+  const location = encodeURIComponent(settings.address||'');
+  const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startDT}/${endDT}&details=${details}&location=${location}&sf=true&output=xml`;
+  window.open(url,'_blank');
+}
+
+function convertTo24(timeStr) {
+  const [time,ampm] = timeStr.split(' ');
+  let [hours,mins] = time.split(':').map(Number);
+  if(ampm==='PM' && hours!==12) hours+=12;
+  if(ampm==='AM' && hours===12) hours=0;
+  return hours.toString().padStart(2,'0') + (mins||0).toString().padStart(2,'0');
+}
+
+// ── GALLERY ───────────────────────────────────────────────────
+let currentGalleryFilter = 'all';
+function renderGallery(filter) {
+  currentGalleryFilter = filter;
+  const gallery = getGallery();
+  const grid = document.getElementById('gallery-grid');
+  if(!grid) return;
+  const items = filter==='all' ? gallery : gallery.filter(g=>g.category===filter);
+  if(!items.length) { grid.innerHTML = '<p style="text-align:center;color:var(--gray);grid-column:1/-1;padding:2rem">No images in this category yet.</p>'; return; }
+  grid.innerHTML = items.map(g=>`
+    <div class="gallery-item" onclick="openLightbox('${g.url}')">
+      <img src="${g.url}" alt="${g.title||''}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400&q=60'">
+      <div class="gallery-overlay"><span class="gallery-overlay-txt">${g.title||''}</span></div>
+      <button class="gallery-zoom" onclick="event.stopPropagation();openLightbox('${g.url}')"><i class="fas fa-search-plus"></i></button>
+    </div>`).join('');
+}
+
+function filterGallery(filter, btn) {
+  document.querySelectorAll('.gf-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  renderGallery(filter);
+}
+
+function openLightbox(url) {
+  document.getElementById('lb-img').src = url;
+  document.getElementById('lightbox').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => { if(e.key==='Escape') { closeLightbox(); closeAllModals(); } });
+
+// ── STYLISTS ──────────────────────────────────────────────────
+function renderStylists() {
+  const stylists = getStylists();
+  const grid = document.getElementById('stylists-grid');
+  if(!grid) return;
+  grid.innerHTML = stylists.map(st=>`
+    <div class="stylist-card">
+      <div class="stylist-img-wrap">
+        <img src="${st.img||'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=400'}" alt="${st.name}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=400'">
+        <div class="stylist-available ${st.status==='busy'?'busy':''}">${st.status==='busy'?'Busy':'Available'}</div>
+      </div>
+      <div class="stylist-info">
+        <div class="stylist-name">${st.name}</div>
+        <div class="stylist-spec">${st.spec||''}</div>
+        <div class="stylist-exp">${st.exp||''}</div>
+        <div class="stylist-stars">⭐⭐⭐⭐⭐</div>
+      </div>
+    </div>`).join('');
+}
+
+// ── CONTACT SECTION ───────────────────────────────────────────
+function updateContactSection() {
+  const s = getSettings();
+  const addr = document.getElementById('ci-address');
+  const phone = document.getElementById('ci-phone');
+  const email = document.getElementById('ci-email');
+  if(addr) addr.textContent = s.address||'';
+  if(phone) phone.textContent = s.phone||'';
+  if(email) email.textContent = s.email||'';
+  const mapName = document.getElementById('contact-map-name');
+  if(mapName) mapName.textContent = s.name+' Beauty Salon';
+  
+  // Business hours
+  const hoursList = document.getElementById('contact-hours-list');
+  if(hoursList) {
+    const days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const mainHrs = s.hours || 'Mon–Sat: 10:00 AM – 8:00 PM';
+    const sunHrs = s.hoursSun || 'Sunday: 11:00 AM – 6:00 PM';
+    hoursList.innerHTML = `
+      <div class="ch-row"><span>${mainHrs}</span></div>
+      <div class="ch-row"><span>${sunHrs||'Sunday: Closed'}</span></div>
+    `;
+  }
+}
+
+function openMaps() {
+  const s = getSettings();
+  const url = s.mapsLink || `https://maps.google.com/?q=${encodeURIComponent(s.address||'Daffodil Beauty Salon')}`;
+  window.open(url,'_blank');
+}
+
+// ── FOOTER ────────────────────────────────────────────────────
+function updateFooter() {
+  const s = getSettings();
+  const footerName = document.getElementById('footer-name');
+  if(footerName) footerName.textContent = '🌼 ' + (s.name||'Daffodil');
+  const footerDesc = document.getElementById('footer-desc');
+  if(footerDesc) footerDesc.textContent = s.tagline ? s.tagline + ' — Your premium beauty destination.' : 'Your premium beauty destination. We believe every person deserves to feel confident, beautiful, and cared for.';
+  
+  const fAddress = document.getElementById('f-address');
+  if(fAddress) fAddress.textContent = (s.address||'').split(',').slice(0,2).join(',');
+  const fPhone = document.getElementById('f-phone');
+  if(fPhone) fPhone.textContent = s.phone||'';
+  const fEmail = document.getElementById('f-email');
+  if(fEmail) fEmail.textContent = s.email||'';
+  const fHours = document.getElementById('f-hours');
+  if(fHours) fHours.textContent = s.hours || 'Mon–Sat: 10AM–8PM';
+  const fCopyName = document.getElementById('f-copy-name');
+  if(fCopyName) fCopyName.textContent = (s.name||'Daffodil') + ' Beauty Salon';
+  
+  // Social icons
+  const socialRow = document.getElementById('social-row');
+  if(socialRow) {
+    const socials = [
+      {cls:'ig', icon:'fab fa-instagram', url:s.instagram||'#', label:'Instagram'},
+      {cls:'fb', icon:'fab fa-facebook-f', url:s.facebook||'#', label:'Facebook'},
+      {cls:'wa', icon:'fab fa-whatsapp', url:s.whatsapp||'https://wa.me/917467977770', label:'WhatsApp'},
+      {cls:'yt', icon:'fab fa-youtube', url:s.youtube||'#', label:'YouTube'}
+    ];
+    socialRow.innerHTML = socials.map(s=>
+      `<a href="${s.url}" class="s-icon ${s.cls}" target="_blank" rel="noopener" aria-label="${s.label}"><i class="${s.icon}"></i></a>`
+    ).join('');
+  }
+  
+  // Footer services list
+  const fSvcList = document.getElementById('footer-services-list');
+  if(fSvcList) {
+    const services = getServices().slice(0,6);
+    fSvcList.innerHTML = services.map(s=>`<li><a href="#services">${s.icon||''} ${s.name}</a></li>`).join('');
+  }
+}
+
+// ── ADMIN AUTHENTICATION ──────────────────────────────────────
+function openAdminLogin() { openModal('admin-login-modal'); }
+
+function doAdminLogin() {
+  const user = document.getElementById('admin-username').value.trim();
+  const pass = document.getElementById('admin-password').value;
+  const s = getSettings();
+  if(user===(s.adminUser||'admin') && pass===(s.adminPass||'admin123')) {
+    closeModal('admin-login-modal');
+    document.getElementById('main-site').style.display = 'none';
+    document.getElementById('admin-dashboard').classList.add('visible');
+    document.getElementById('scroll-top').style.display = 'none';
+    initAdminDashboard();
+    toast('Welcome to Admin Dashboard!','success');
+  } else {
+    toast('Invalid credentials. Please try again.','error');
+    document.getElementById('admin-password').value = '';
+  }
+}
+
+function adminLogout() {
+  document.getElementById('admin-dashboard').classList.remove('visible');
+  document.getElementById('main-site').style.display = 'block';
+  document.getElementById('scroll-top').style.display = '';
+  window.scrollTo({top:0,behavior:'smooth'});
+  toast('Logged out successfully','info');
+}
+
+function openForgotPassword() {
+  closeModal('admin-login-modal');
+  document.getElementById('otp-step1').style.display = 'block';
+  document.getElementById('otp-step2').style.display = 'none';
+  document.getElementById('otp-step3').style.display = 'none';
+  document.getElementById('otp-phone-input').value = '';
+  openModal('forgot-pass-modal');
+}
+
+function sendOTP() {
+  const phone = document.getElementById('otp-phone-input').value.trim();
+  if(!phone) { toast('Please enter your registered mobile number','error'); return; }
+  const s = getSettings();
+  const registeredPhone = s.adminPhone || s.adminWhatsapp || '+917467977770';
+  const cleanInput = phone.replace(/\D/g,'');
+  const cleanReg = registeredPhone.replace(/\D/g,'');
+  if(!cleanReg.includes(cleanInput) && !cleanInput.includes(cleanReg.slice(-10))) {
+    toast('This number is not registered. Please enter your registered admin number.','error'); return;
+  }
+  otpPhone = phone;
+  currentOTP = Math.floor(100000 + Math.random()*900000).toString();
+  document.getElementById('otp-display-code').textContent = currentOTP;
+  
+  // Send via WhatsApp
+  const cleanWa = cleanReg.startsWith('91') ? cleanReg : '91'+cleanReg;
+  const msg = `🔐 Your Daffodil Beauty Salon admin password reset OTP is:\n\n*${currentOTP}*\n\nValid for 10 minutes. Do not share this OTP.`;
+  window.open(`https://wa.me/${cleanWa}?text=${encodeURIComponent(msg)}`, '_blank');
+  
+  document.getElementById('otp-step1').style.display = 'none';
+  document.getElementById('otp-step2').style.display = 'block';
+  toast('OTP sent via WhatsApp! Check your messages.','success');
+}
+
+function verifyOTP() {
+  const entered = document.getElementById('otp-enter-input').value.trim();
+  if(entered === currentOTP) {
+    document.getElementById('otp-step2').style.display = 'none';
+    document.getElementById('otp-step3').style.display = 'block';
+    toast('OTP verified!','success');
+  } else {
+    toast('Incorrect OTP. Please try again.','error');
+    document.getElementById('otp-enter-input').value = '';
+  }
+}
+
+function resetPasswordOTP() {
+  const newPass = document.getElementById('otp-new-pass').value;
+  const conPass = document.getElementById('otp-con-pass').value;
+  if(!newPass || newPass.length < 6) { toast('Password must be at least 6 characters','error'); return; }
+  if(newPass !== conPass) { toast('Passwords do not match','error'); return; }
+  const s = getSettings();
+  s.adminPass = newPass;
+  lsSet('settings', s);
+  closeModal('forgot-pass-modal');
+  toast('Password reset successfully! Please login with your new password.','success');
+  openAdminLogin();
+}
+
+// ── ADMIN DASHBOARD ───────────────────────────────────────────
+function initAdminDashboard() {
+  refreshAdminOverview();
+  loadSettingsForm();
+  renderAdminBookings();
+  renderAdminServices();
+  renderAdminStylists();
+  renderAdminGallery();
+  renderAdminBanners();
+  renderAdminSlots();
+  updateAdminBadge();
+}
+
+function showAdmSection(sec) {
+  document.querySelectorAll('.adm-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.adm-nav-item').forEach(i=>i.classList.remove('active'));
+  const el = document.getElementById('sec-'+sec);
+  if(el) el.classList.add('active');
+  const titles = {
+    overview:'Dashboard Overview', bookings:'Manage Bookings',
+    services:'Manage Services', stylists:'Manage Stylists',
+    gallery:'Manage Gallery', banners:'Promotional Banners',
+    slots:'Time Slots & Date Blocking', settings:'Salon Settings'
+  };
+  document.getElementById('adm-page-title').textContent = titles[sec]||sec;
+  // Highlight nav
+  const navItems = document.querySelectorAll('.adm-nav-item');
+  const secMap = ['overview','bookings','services','stylists','gallery','banners','slots','settings'];
+  navItems.forEach((item,i) => { if(secMap[i]===sec) item.classList.add('active'); });
+  // Refresh data
+  if(sec==='overview') refreshAdminOverview();
+  if(sec==='bookings') renderAdminBookings();
+  if(sec==='services') renderAdminServices();
+  if(sec==='stylists') renderAdminStylists();
+  if(sec==='gallery') renderAdminGallery();
+  if(sec==='banners') renderAdminBanners();
+  if(sec==='slots') renderAdminSlots();
+  if(sec==='settings') loadSettingsForm();
+  // Close mobile sidebar
+  document.getElementById('adm-sidebar').classList.remove('open');
+  document.getElementById('adm-overlay').classList.remove('show');
+}
+
+function toggleAdminSidebar() {
+  document.getElementById('adm-sidebar').classList.toggle('open');
+  document.getElementById('adm-overlay').classList.toggle('show');
+}
+
+function refreshAdminOverview() {
+  const bookings = getBookings();
+  const today = new Date().toISOString().split('T')[0];
+  const todayBookings = bookings.filter(b=>b.date===today && b.status==='confirmed');
+  const totalRevenue = bookings.filter(b=>b.paymentStatus==='paid').reduce((a,b)=>a+Number(b.totalPrice),0);
+  const pending = bookings.filter(b=>b.status==='confirmed').length;
+  const statsRow = document.getElementById('stats-row');
+  if(statsRow) {
+    statsRow.innerHTML = `
+      <div class="stat-card"><div class="stat-value">${bookings.length}</div><div class="stat-label">Total Bookings</div></div>
+      <div class="stat-card rose"><div class="stat-value">${todayBookings.length}</div><div class="stat-label">Today's Appointments</div></div>
+      <div class="stat-card gold"><div class="stat-value">₹${totalRevenue.toLocaleString('en-IN')}</div><div class="stat-label">Revenue (Paid)</div></div>
+      <div class="stat-card green"><div class="stat-value">${pending}</div><div class="stat-label">Active Bookings</div></div>
+    `;
+  }
+  // Recent bookings table
+  const tbody = document.getElementById('recent-bookings-body');
+  if(tbody) {
+    const recent = bookings.slice(0,5);
+    tbody.innerHTML = recent.map(b=>`
+      <tr>
+        <td><strong>${b.customerName}</strong><br><small style="color:var(--gray)">${b.phone}</small></td>
+        <td>${b.services.slice(0,2).join(', ')}${b.services.length>2?'...':''}</td>
+        <td>${formatDate(b.date)}</td>
+        <td>${b.time}</td>
+        <td><strong>₹${Number(b.totalPrice).toLocaleString('en-IN')}</strong></td>
+        <td><span class="badge badge-${b.status}">${b.status}</span></td>
+      </tr>`).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--gray);padding:2rem">No bookings yet</td></tr>';
+  }
+}
+
+function updateAdminBadge() {
+  const bookings = getBookings();
+  const recent = bookings.filter(b => {
+    const mins = (Date.now() - new Date(b.createdAt).getTime()) / 60000;
+    return mins < 30;
+  }).length;
+  const badge = document.getElementById('new-booking-badge');
+  if(badge) {
+    badge.style.display = recent > 0 ? '' : 'none';
+    badge.textContent = recent;
+  }
+}
+
+// ── ADMIN BOOKINGS ────────────────────────────────────────────
+function renderAdminBookings(filter='', statusFilter='') {
+  const bookings = getBookings();
+  const tbody = document.getElementById('all-bookings-body');
+  if(!tbody) return;
+  let filtered = bookings;
+  if(filter) {
+    const q = filter.toLowerCase();
+    filtered = filtered.filter(b =>
+      b.customerName.toLowerCase().includes(q) ||
+      b.phone.includes(q) ||
+      b.id.toLowerCase().includes(q) ||
+      b.services.join(' ').toLowerCase().includes(q)
+    );
+  }
+  if(statusFilter) filtered = filtered.filter(b=>b.status===statusFilter);
+  tbody.innerHTML = filtered.map(b=>`
+    <tr>
+      <td><code style="font-size:.75rem;color:var(--maroon)">#${b.id}</code></td>
+      <td><strong>${b.customerName}</strong></td>
+      <td>${b.phone}</td>
+      <td style="max-width:150px;white-space:normal;word-break:break-word">${b.services.join(', ')}</td>
+      <td>${formatDate(b.date)}</td>
+      <td>${b.time}</td>
+      <td><strong>₹${Number(b.totalPrice).toLocaleString('en-IN')}</strong></td>
+      <td>
+        <span class="badge ${b.paymentMethod!=='Pay at Salon'?'badge-confirmed':'badge-pending'}">${b.paymentMethod}</span><br>
+        <span class="badge ${b.paymentStatus==='paid'?'badge-paid':'badge-unpaid'}">${b.paymentStatus}</span>
+      </td>
+      <td><span class="badge badge-${b.status}">${b.status}</span></td>
+      <td>
+        <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+          <button class="adm-btn adm-btn-sm adm-btn-success" onclick="updateBookingStatus('${b.id}','confirmed')" title="Confirm">✓</button>
+          <button class="adm-btn adm-btn-sm adm-btn-danger" onclick="updateBookingStatus('${b.id}','cancelled')" title="Cancel">✗</button>
+          <button class="adm-btn adm-btn-sm" style="background:#fff3e0;color:#e65100" onclick="notifyCustomerWA('${b.id}')" title="WhatsApp Customer"><i class="fab fa-whatsapp"></i></button>
+        </div>
+      </td>
+    </tr>`).join('') || '<tr><td colspan="10" style="text-align:center;color:var(--gray);padding:2rem">No bookings found</td></tr>';
+}
+
+function filterBookingsTable(val) { renderAdminBookings(val); }
+function filterBookingsByStatus(val) { renderAdminBookings('',val); }
+
+function updateBookingStatus(id, status) {
+  const bookings = getBookings();
+  const idx = bookings.findIndex(b=>b.id===id);
+  if(idx>-1) { bookings[idx].status = status; lsSet('bookings',bookings); }
+  renderAdminBookings();
+  refreshAdminOverview();
+  toast('Booking status updated!','success');
+}
+
+function notifyCustomerWA(id) {
+  const bookings = getBookings();
+  const b = bookings.find(x=>x.id===id);
+  if(!b) return;
+  const s = getSettings();
+  const phone = b.phone.replace(/\D/g,'');
+  const msg = `Hello ${b.customerName}! 🌼\n\nYour appointment at *${s.name||'Daffodil Beauty Salon'}* is confirmed.\n\n*📋 Booking Details:*\n✂️ Services: ${b.services.join(', ')}\n📅 Date: ${formatDate(b.date)}\n⏰ Time: ${b.time}\n💰 Total: ₹${Number(b.totalPrice).toLocaleString('en-IN')}\n\nWe look forward to seeing you! 😊`;
+  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+// ── ADMIN SERVICES ────────────────────────────────────────────
+function renderAdminServices() {
+  const services = getServices();
+  const tbody = document.getElementById('services-admin-body');
+  if(!tbody) return;
+  tbody.innerHTML = services.map(s=>`
+    <tr>
+      <td style="font-size:1.5rem">${s.icon||'💄'}</td>
+      <td><strong>${s.name}</strong></td>
+      <td><strong>₹${Number(s.price).toLocaleString('en-IN')}</strong></td>
+      <td>${s.duration||'—'}</td>
+      <td><span class="badge" style="background:var(--beige);color:var(--maroon)">${s.category||'other'}</span></td>
+      <td>
+        <div style="display:flex;gap:.4rem">
+          <button class="adm-btn adm-btn-sm adm-btn-edit" onclick="openServiceModal('${s.id}')"><i class="fas fa-edit"></i></button>
+          <button class="adm-btn adm-btn-sm adm-btn-danger" onclick="deleteService('${s.id}')"><i class="fas fa-trash"></i></button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function openServiceModal(id) {
+  if(id) {
+    const s = getServices().find(x=>x.id===id);
+    if(!s) return;
+    document.getElementById('service-modal-title').textContent = 'Edit Service';
+    document.getElementById('s-edit-id').value = id;
+    document.getElementById('s-svc-name').value = s.name||'';
+    document.getElementById('s-svc-cat').value = s.category||'hair';
+    document.getElementById('s-svc-desc').value = s.desc||'';
+    document.getElementById('s-svc-price').value = s.price||'';
+    document.getElementById('s-svc-dur').value = s.duration||'';
+    document.getElementById('s-svc-icon').value = s.icon||'';
+  } else {
+    document.getElementById('service-modal-title').textContent = 'Add Service';
+    document.getElementById('s-edit-id').value = '';
+    ['s-svc-name','s-svc-desc','s-svc-price','s-svc-dur','s-svc-icon'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('s-svc-cat').value = 'hair';
+  }
+  openModal('service-modal');
+}
+
+function saveService() {
+  const editId = document.getElementById('s-edit-id').value;
+  const name = document.getElementById('s-svc-name').value.trim();
+  const price = document.getElementById('s-svc-price').value;
+  if(!name||!price) { toast('Name and price are required','error'); return; }
+  const services = getServices();
+  const svc = {
+    id: editId || 's'+Date.now(),
+    name, category: document.getElementById('s-svc-cat').value,
+    desc: document.getElementById('s-svc-desc').value.trim(),
+    price: parseFloat(price),
+    duration: document.getElementById('s-svc-dur').value.trim(),
+    icon: document.getElementById('s-svc-icon').value.trim() || '💄'
+  };
+  if(editId) {
+    const idx = services.findIndex(s=>s.id===editId);
+    if(idx>-1) services[idx]=svc; else services.push(svc);
+  } else {
+    services.push(svc);
+  }
+  lsSet('services',services);
+  closeModal('service-modal');
+  renderAdminServices();
+  renderServices(); // refresh public
+  updateFooter();
+  toast(editId?'Service updated!':'Service added!','success');
+}
+
+function deleteService(id) {
+  if(!confirm('Delete this service?')) return;
+  const services = getServices().filter(s=>s.id!==id);
+  lsSet('services',services);
+  renderAdminServices();
+  renderServices();
+  toast('Service deleted','success');
+}
+
+// ── ADMIN STYLISTS ────────────────────────────────────────────
+function renderAdminStylists() {
+  const stylists = getStylists();
+  const tbody = document.getElementById('stylists-admin-body');
+  if(!tbody) return;
+  tbody.innerHTML = stylists.map(st=>`
+    <tr>
+      <td><img src="${st.img||''}" style="width:45px;height:45px;border-radius:50%;object-fit:cover" onerror="this.style.display='none'"></td>
+      <td><strong>${st.name}</strong></td>
+      <td>${st.spec||'—'}</td>
+      <td>${st.exp||'—'}</td>
+      <td><span class="badge" style="background:${st.status==='available'?'#e8f5e9;color:#2e7d32':'#fff8e1;color:#f57f17'}">${st.status||'available'}</span></td>
+      <td>
+        <div style="display:flex;gap:.4rem">
+          <button class="adm-btn adm-btn-sm adm-btn-edit" onclick="openStylistModal('${st.id}')"><i class="fas fa-edit"></i></button>
+          <button class="adm-btn adm-btn-sm adm-btn-danger" onclick="deleteStylist('${st.id}')"><i class="fas fa-trash"></i></button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function openStylistModal(id) {
+  if(id) {
+    const st = getStylists().find(x=>x.id===id);
+    if(!st) return;
+    document.getElementById('stylist-modal-title').textContent = 'Edit Stylist';
+    document.getElementById('st-edit-id').value = id;
+    document.getElementById('st-name').value = st.name||'';
+    document.getElementById('st-spec').value = st.spec||'';
+    document.getElementById('st-exp').value = st.exp||'';
+    document.getElementById('st-status').value = st.status||'available';
+    document.getElementById('st-img').value = st.img||'';
+    document.getElementById('st-bio').value = st.bio||'';
+  } else {
+    document.getElementById('stylist-modal-title').textContent = 'Add Stylist';
+    document.getElementById('st-edit-id').value = '';
+    ['st-name','st-spec','st-exp','st-img','st-bio'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('st-status').value = 'available';
+  }
+  openModal('stylist-modal');
+}
+
+function saveStylist() {
+  const editId = document.getElementById('st-edit-id').value;
+  const name = document.getElementById('st-name').value.trim();
+  if(!name) { toast('Stylist name is required','error'); return; }
+  const stylists = getStylists();
+  const st = {
+    id: editId || 'st'+Date.now(),
+    name,
+    spec: document.getElementById('st-spec').value.trim(),
+    exp: document.getElementById('st-exp').value.trim(),
+    status: document.getElementById('st-status').value,
+    img: document.getElementById('st-img').value.trim(),
+    bio: document.getElementById('st-bio').value.trim()
+  };
+  if(editId) {
+    const idx = stylists.findIndex(s=>s.id===editId);
+    if(idx>-1) stylists[idx]=st; else stylists.push(st);
+  } else {
+    stylists.push(st);
+  }
+  lsSet('stylists',stylists);
+  closeModal('stylist-modal');
+  renderAdminStylists();
+  renderStylists();
+  toast(editId?'Stylist updated!':'Stylist added!','success');
+}
+
+function deleteStylist(id) {
+  if(!confirm('Remove this stylist?')) return;
+  const stylists = getStylists().filter(s=>s.id!==id);
+  lsSet('stylists',stylists);
+  renderAdminStylists();
+  renderStylists();
+  toast('Stylist removed','success');
+}
+
+// ── ADMIN GALLERY ─────────────────────────────────────────────
+function renderAdminGallery() {
+  const gallery = getGallery();
+  const grid = document.getElementById('gallery-admin-grid');
+  if(!grid) return;
+  grid.innerHTML = gallery.map(g=>`
+    <div class="ga-item">
+      <img src="${g.url}" alt="${g.title||''}" loading="lazy" onerror="this.parentElement.style.display='none'">
+      <div class="ga-item-overlay">
+        <button class="adm-btn adm-btn-sm" style="background:rgba(255,255,255,.9);color:var(--maroon)" onclick="openLightbox('${g.url}')"><i class="fas fa-eye"></i></button>
+        <button class="adm-btn adm-btn-sm adm-btn-danger" onclick="deleteGalleryImage('${g.id}')"><i class="fas fa-trash"></i></button>
+      </div>
+    </div>`).join('');
+}
+
+function openGalleryAdd() { 
+  document.getElementById('g-img-url').value='';
+  document.getElementById('g-img-title').value='';
+  document.getElementById('g-img-cat').value='hair';
+  document.getElementById('g-img-preview').style.display='none';
+  openModal('gallery-modal'); 
+}
+
+function previewGalleryImg() {
+  const url = document.getElementById('g-img-url').value;
+  const prev = document.getElementById('g-img-preview');
+  const img = document.getElementById('g-preview-img');
+  if(url) { img.src=url; prev.style.display='block'; } 
+  else prev.style.display='none';
+}
+
+function saveGalleryImage() {
+  const url = document.getElementById('g-img-url').value.trim();
+  if(!url) { toast('Image URL is required','error'); return; }
+  const gallery = getGallery();
+  gallery.push({
+    id: 'g'+Date.now(),
+    url,
+    title: document.getElementById('g-img-title').value.trim(),
+    category: document.getElementById('g-img-cat').value
+  });
+  lsSet('gallery',gallery);
+  closeModal('gallery-modal');
+  renderAdminGallery();
+  renderGallery(currentGalleryFilter);
+  toast('Image added to gallery!','success');
+}
+
+function deleteGalleryImage(id) {
+  if(!confirm('Remove this image?')) return;
+  lsSet('gallery', getGallery().filter(g=>g.id!==id));
+  renderAdminGallery();
+  renderGallery(currentGalleryFilter);
+  toast('Image removed','success');
+}
+
+// ── ADMIN BANNERS ─────────────────────────────────────────────
+function renderAdminBanners() {
+  const banners = getBanners();
+  const list = document.getElementById('banner-admin-list');
+  if(!list) return;
+  list.innerHTML = banners.map(b=>`
+    <div class="banner-admin-item">
+      <img class="banner-admin-thumb" src="${b.img||''}" alt="${b.title||''}" onerror="this.style.background='var(--beige-dark)'">
+      <div class="banner-admin-info">
+        <div class="banner-admin-title">${b.title||'Untitled'}</div>
+        <div class="banner-admin-sub">${b.tag||''} • ${b.sub||''}</div>
+      </div>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <button class="adm-btn adm-btn-sm adm-btn-edit" onclick="openBannerEdit('${b.id}')"><i class="fas fa-edit"></i></button>
+        <button class="adm-btn adm-btn-sm adm-btn-danger" onclick="deleteBanner('${b.id}')"><i class="fas fa-trash"></i></button>
+      </div>
+    </div>`).join('') || '<p style="color:var(--gray);text-align:center;padding:2rem">No banners yet. Add one!</p>';
+}
+
+function openBannerAdd() {
+  document.getElementById('banner-modal-title').textContent = 'Add Promotional Banner';
+  document.getElementById('b-edit-id').value = '';
+  ['b-title','b-tag','b-sub','b-cta','b-img'].forEach(id=>document.getElementById(id).value='');
+  openModal('banner-modal');
+}
+
+function openBannerEdit(id) {
+  const b = getBanners().find(x=>x.id===id);
+  if(!b) return;
+  document.getElementById('banner-modal-title').textContent = 'Edit Banner';
+  document.getElementById('b-edit-id').value = id;
+  document.getElementById('b-title').value = b.title||'';
+  document.getElementById('b-tag').value = b.tag||'';
+  document.getElementById('b-sub').value = b.sub||'';
+  document.getElementById('b-cta').value = b.cta||'';
+  document.getElementById('b-img').value = b.img||'';
+  openModal('banner-modal');
+}
+
+function saveBanner() {
+  const editId = document.getElementById('b-edit-id').value;
+  const title = document.getElementById('b-title').value.trim();
+  if(!title) { toast('Banner title is required','error'); return; }
+  const banners = getBanners();
+  const b = {
+    id: editId || 'b'+Date.now(),
+    title, tag: document.getElementById('b-tag').value.trim(),
+    sub: document.getElementById('b-sub').value.trim(),
+    cta: document.getElementById('b-cta').value.trim() || 'Book Now',
+    img: document.getElementById('b-img').value.trim()
+  };
+  if(editId) {
+    const idx = banners.findIndex(x=>x.id===editId);
+    if(idx>-1) banners[idx]=b; else banners.push(b);
+  } else {
+    banners.push(b);
+  }
+  lsSet('banners',banners);
+  closeModal('banner-modal');
+  renderAdminBanners();
+  renderBanners(); // refresh public slider
+  toast(editId?'Banner updated!':'Banner added!','success');
+}
+
+function deleteBanner(id) {
+  if(!confirm('Delete this banner?')) return;
+  lsSet('banners', getBanners().filter(b=>b.id!==id));
+  renderAdminBanners();
+  renderBanners();
+  toast('Banner deleted','success');
+}
+
+// ── ADMIN SLOTS ───────────────────────────────────────────────
+function renderAdminSlots() {
+  const settings = getSettings();
+  const globalBlocked = settings.globalBlockedSlots || [];
+  const grid = document.getElementById('slot-mgmt-grid');
+  if(grid) {
+    grid.innerHTML = ALL_SLOTS.map(slot => {
+      const isBlocked = globalBlocked.includes(slot);
+      return `<div class="slot-mgmt-item ${isBlocked?'blocked':''}" onclick="toggleGlobalSlot('${slot}')">
+        <i class="fas ${isBlocked?'fa-ban':'fa-check-circle'}" style="color:${isBlocked?'#c62828':'#2e7d32'}"></i>
+        ${slot}
+      </div>`;
+    }).join('');
+  }
+  
+  // Blocked dates tags
+  const blockedDates = settings.blockedDates || [];
+  const tagsWrap = document.getElementById('blocked-dates-tags');
+  if(tagsWrap) {
+    tagsWrap.innerHTML = blockedDates.length ?
+      blockedDates.map(d=>`<div class="blocked-tag">${formatDate(d)} <button onclick="unblockDate('${d}')">×</button></div>`).join('') :
+      '<p style="font-size:.82rem;color:var(--gray)">No dates blocked</p>';
+  }
+  
+  // Block date input min
+  const blockInput = document.getElementById('block-date-input');
+  if(blockInput) {
+    const today = new Date().toISOString().split('T')[0];
+    blockInput.min = today;
+  }
+  const slotByDateInput = document.getElementById('slot-by-date-input');
+  if(slotByDateInput) {
+    const today = new Date().toISOString().split('T')[0];
+    slotByDateInput.min = today;
+  }
+}
+
+function toggleGlobalSlot(slot) {
+  const s = getSettings();
+  const gb = s.globalBlockedSlots || [];
+  const idx = gb.indexOf(slot);
+  if(idx>-1) gb.splice(idx,1); else gb.push(slot);
+  s.globalBlockedSlots = gb;
+  lsSet('settings',s);
+  renderAdminSlots();
+  toast(`Slot ${idx>-1?'unblocked':'blocked'}: ${slot}`,'success');
+}
+
+function blockFullDate() {
+  const date = document.getElementById('block-date-input').value;
+  if(!date) { toast('Please select a date','error'); return; }
+  const s = getSettings();
+  const bd = s.blockedDates || [];
+  if(!bd.includes(date)) {
+    bd.push(date);
+    s.blockedDates = bd;
+    lsSet('settings',s);
+    renderAdminSlots();
+    toast('Date blocked: '+formatDate(date),'success');
+  } else {
+    toast('This date is already blocked','info');
+  }
+  document.getElementById('block-date-input').value = '';
+}
+
+function unblockDate(date) {
+  const s = getSettings();
+  s.blockedDates = (s.blockedDates||[]).filter(d=>d!==date);
+  lsSet('settings',s);
+  renderAdminSlots();
+  toast('Date unblocked: '+formatDate(date),'success');
+}
+
+function openSlotByDateModal() {
+  document.getElementById('sec-slots').scrollIntoView({behavior:'smooth',block:'end'});
+}
+
+function loadSlotsByDate() {
+  const date = document.getElementById('slot-by-date-input').value;
+  if(!date) return;
+  const s = getSettings();
+  const blocked = (s.blockedSlotsByDate||{})[date] || [];
+  const grid = document.getElementById('slot-by-date-grid');
+  if(!grid) return;
+  grid.innerHTML = ALL_SLOTS.map(slot=>{
+    const isBlocked = blocked.includes(slot);
+    return `<div class="slot-mgmt-item ${isBlocked?'blocked':''}" onclick="toggleSlotByDate('${date}','${slot}')">
+      <i class="fas ${isBlocked?'fa-ban':'fa-check-circle'}" style="color:${isBlocked?'#c62828':'#2e7d32'}"></i>
+      ${slot}
+    </div>`;
+  }).join('');
+}
+
+function toggleSlotByDate(date, slot) {
+  const s = getSettings();
+  if(!s.blockedSlotsByDate) s.blockedSlotsByDate = {};
+  if(!s.blockedSlotsByDate[date]) s.blockedSlotsByDate[date] = [];
+  const arr = s.blockedSlotsByDate[date];
+  const idx = arr.indexOf(slot);
+  if(idx>-1) arr.splice(idx,1); else arr.push(slot);
+  s.blockedSlotsByDate[date] = arr;
+  lsSet('settings',s);
+  loadSlotsByDate();
+  toast(`${idx>-1?'Unblocked':'Blocked'} ${slot} on ${formatDate(date)}`,'success');
+}
+
+// ── ADMIN SETTINGS ────────────────────────────────────────────
+function loadSettingsForm() {
+  const s = getSettings();
+  const fields = {
+    's-name':s.name,'s-tagline':s.tagline,'s-address':s.address,
+    's-phone':s.phone,'s-email':s.email,'s-hours':s.hours,'s-hours-sun':s.hoursSun,
+    's-instagram':s.instagram,'s-facebook':s.facebook,
+    's-whatsapp':(s.whatsapp||'').replace('https://wa.me/','').replace('917','91 7'),
+    's-youtube':s.youtube,'s-maps':s.mapsLink,
+    's-upi':s.upiId,'s-upi-name':s.upiName,
+    's-rzp-key':s.razorpayKey,'s-acc-name':s.accountName,
+    's-admin-wa':s.adminWhatsapp,'s-admin-phone':s.adminPhone
+  };
+  for(const [id,val] of Object.entries(fields)) {
+    const el = document.getElementById(id);
+    if(el) el.value = val||'';
+  }
+  // Toggle
+  const toggle = document.getElementById('online-pay-toggle');
+  if(toggle) toggle.classList.toggle('on', s.onlinePayEnabled!==false);
+}
+
+function saveSettings(section) {
+  const s = getSettings();
+  if(section==='info') {
+    s.name = document.getElementById('s-name').value.trim();
+    s.tagline = document.getElementById('s-tagline').value.trim();
+    s.address = document.getElementById('s-address').value.trim();
+    s.phone = document.getElementById('s-phone').value.trim();
+    s.email = document.getElementById('s-email').value.trim();
+    s.hours = document.getElementById('s-hours').value.trim();
+    s.hoursSun = document.getElementById('s-hours-sun').value.trim();
+  } else if(section==='social') {
+    s.instagram = document.getElementById('s-instagram').value.trim();
+    s.facebook = document.getElementById('s-facebook').value.trim();
+    const wa = document.getElementById('s-whatsapp').value.trim().replace(/\D/g,'');
+    s.whatsapp = wa ? 'https://wa.me/'+wa : '';
+    s.youtube = document.getElementById('s-youtube').value.trim();
+    s.mapsLink = document.getElementById('s-maps').value.trim();
+  } else if(section==='payment') {
+    s.upiId = document.getElementById('s-upi').value.trim();
+    s.upiName = document.getElementById('s-upi-name').value.trim();
+    s.razorpayKey = document.getElementById('s-rzp-key').value.trim();
+    s.accountName = document.getElementById('s-acc-name').value.trim();
+  } else if(section==='notifications') {
+    s.adminWhatsapp = document.getElementById('s-admin-wa').value.trim();
+    s.adminPhone = document.getElementById('s-admin-phone').value.trim();
+  }
+  lsSet('settings',s);
+  updateNavSalonName();
+  updateContactSection();
+  updateFooter();
+  renderBanners();
+  toast('Settings saved!','success');
+}
+
+function togglePaymentMode() {
+  const s = getSettings();
+  s.onlinePayEnabled = !s.onlinePayEnabled;
+  lsSet('settings',s);
+  const toggle = document.getElementById('online-pay-toggle');
+  if(toggle) toggle.classList.toggle('on', s.onlinePayEnabled);
+  toast('Payment mode ' + (s.onlinePayEnabled?'enabled':'disabled'),'info');
+}
+
+function changeAdminPassword() {
+  const cur = document.getElementById('s-cur-pass').value;
+  const nw = document.getElementById('s-new-pass').value;
+  const cn = document.getElementById('s-con-pass').value;
+  const s = getSettings();
+  if(cur !== (s.adminPass||'admin123')) { toast('Current password is incorrect','error'); return; }
+  if(!nw || nw.length<6) { toast('New password must be at least 6 characters','error'); return; }
+  if(nw !== cn) { toast('Passwords do not match','error'); return; }
+  s.adminPass = nw;
+  lsSet('settings',s);
+  document.getElementById('s-cur-pass').value = '';
+  document.getElementById('s-new-pass').value = '';
+  document.getElementById('s-con-pass').value = '';
+  toast('Password changed successfully!','success');
+}
+
+// ── MODAL UTILITIES ───────────────────────────────────────────
+function openModal(id) {
+  document.getElementById(id).classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('active');
+  document.body.style.overflow = '';
+}
+function closeAllModals() {
+  document.querySelectorAll('.modal-overlay').forEach(m=>m.classList.remove('active'));
+  document.body.style.overflow = '';
+}
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay=>{
+  overlay.addEventListener('click', e=>{
+    if(e.target===overlay) closeAllModals();
+  });
+});
+
+function togglePassVisibility(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  if(inp.type==='password') {
+    inp.type='text';
+    btn.innerHTML='<i class="fas fa-eye-slash"></i>';
+  } else {
+    inp.type='password';
+    btn.innerHTML='<i class="fas fa-eye"></i>';
+  }
+}
+
+// ── TOAST NOTIFICATIONS ───────────────────────────────────────
+function toast(msg, type='info', duration=3500) {
+  const wrap = document.getElementById('toast-wrap');
+  const div = document.createElement('div');
+  const icons = {success:'fa-check-circle', error:'fa-exclamation-circle', info:'fa-info-circle', warning:'fa-exclamation-triangle'};
+  div.className = `toast ${type}`;
+  div.innerHTML = `<i class="fas ${icons[type]||'fa-info-circle'} toast-ico"></i><div class="toast-msg">${msg}</div>`;
+  wrap.appendChild(div);
+  requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ div.classList.add('show'); }); });
+  setTimeout(()=>{
+    div.classList.remove('show');
+    setTimeout(()=>{ if(div.parentNode) div.parentNode.removeChild(div); }, 500);
+  }, duration);
+}
+
+// ── UTILITIES ─────────────────────────────────────────────────
+function formatDate(dateStr) {
+  if(!dateStr) return '—';
+  try {
+    const [y,m,d] = dateStr.split('-');
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const date = new Date(y, m-1, d);
+    return `${days[date.getDay()]}, ${d} ${months[m-1]} ${y}`;
+  } catch(e) { return dateStr; }
+}
+
+// ── KEYBOARD SHORTCUTS ────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if(e.key==='Enter') {
+    const modal = document.querySelector('.modal-overlay.active');
+    if(modal && modal.id==='admin-login-modal') doAdminLogin();
+  }
+});
+
+// ── AUTO-REFRESH ADMIN (for new bookings) ─────────────────────
+setInterval(() => {
+  if(document.getElementById('admin-dashboard').classList.contains('visible')) {
+    updateAdminBadge();
+  }
+}, 30000);
+
+// Trigger slot load on booking section visibility
+const bookingSection = document.getElementById('booking');
+if(bookingSection) {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if(e.isIntersecting) setMinBookingDate(); });
+  }, {threshold:0.1});
+  observer.observe(bookingSection);
+}
+</script>
+</body>
+</html>
